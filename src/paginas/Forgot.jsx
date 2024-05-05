@@ -47,7 +47,7 @@ export const Forgot = () => {
                             <input type="email" 
                             name='email' 
 		                    onChange={handleChange}
-                            placeholder="Enter you email" className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-1.5 text-gray-500" />
+                            placeholder="Ingresa tu email" className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-1.5 text-gray-500" />
                         </div>
 
                         <div className="mb-3">
@@ -70,7 +70,7 @@ export const Forgot = () => {
 
             </div>
 
-            <div className="w-1/2 h-screen bg-[url('/public/images/catforgot.jpg')] 
+            <div className="w-1/2 h-screen bg-[url('/public/images/r.contraseña.webp')] 
             bg-no-repeat bg-cover bg-center sm:block hidden
             ">
             </div>
