@@ -55,7 +55,7 @@ const Login = () => {
 
     return (
         <>
-            <div className="w-1/2 h-screen bg-[url('/public/images/Login.jpeg')] 
+            <div className="w-1/2 h-screen bg-[url('/images/Login.jpeg')] 
             bg-no-repeat bg-cover bg-center sm:block hidden
             ">
             </div>
