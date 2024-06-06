@@ -6,7 +6,7 @@ import { LandinPage } from './paginas/LandinPage';
 import { Register } from './paginas/Register';
 import { Forgot } from './paginas/Forgot';
 import { NotFound } from './paginas/NotFound';
-import {Pedido} from './paginas/Pedidos';
+import Pedido from './paginas/Pedidos';
 import {Factura} from './paginas/Factura';
 import {HistorialPedidos} from './paginas/Historial';
 import Dashboard from './layout/Dashboard';
