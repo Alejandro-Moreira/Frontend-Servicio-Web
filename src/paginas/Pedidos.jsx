@@ -1,4 +1,4 @@
-// src/OrderStatus.js
+// src/paginas/Pedidos.jsx
 import React, { useState } from 'react';
 
 const Pedido = () => {

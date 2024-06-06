@@ -6,9 +6,9 @@ import { LandinPage } from './paginas/LandinPage';
 import { Register } from './paginas/Register';
 import { Forgot } from './paginas/Forgot';
 import { NotFound } from './paginas/NotFound';
-import Pedido from './paginas/Pedidos';
-import {Factura} from './paginas/Factura';
-import {HistorialPedidos} from './paginas/Historial';
+import Pedido from './paginas/Pedidos'; // Importa Pedido desde Pedidos.jsx
+import Factura from './paginas/Factura'; // Importa Factura desde Factura.jsx
+import HistorialPedidos from './paginas/HistorialPedidos'; // Importa HistorialPedidos desde HistorialPedidos.jsx
 import Dashboard from './layout/Dashboard';
 import Listar from './paginas/Listar';
 import Visualizar from './paginas/Visualizar';
