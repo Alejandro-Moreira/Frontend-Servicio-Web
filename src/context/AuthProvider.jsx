@@ -5,7 +5,7 @@ import { createContext, useEffect, useState } from "react"
 const AuthContext = createContext()
 
 // Contenido del mensaje a ser enviado 
-//                      componentes (estudiantes)
+//componentes (estudiantes)
 const AuthProvider = ({ children }) => {
     // Creacion de usestate - perfil edl usuario que va a iniciar sesion
     const [auth, setAuth] = useState({})

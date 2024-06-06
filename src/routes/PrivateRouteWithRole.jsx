@@ -7,7 +7,7 @@ export default function PrivateRouteWithRole({ children }) {
     const { auth } = useContext(AuthContext)
 
     if ("paciente" === auth.rol) {
-        return <Forbidden/>
+        return <Forbidden />
     } else {
         return children
     }

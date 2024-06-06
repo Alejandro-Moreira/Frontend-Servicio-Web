@@ -39,7 +39,7 @@ const Actualizar = () => {
             {
                 Object.keys(paciente).length != 0 ?
                     (
-                        <Formulario paciente={paciente}/>
+                        <Formulario paciente={paciente} />
                     )
                     :
                     (

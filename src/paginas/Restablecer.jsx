@@ -9,12 +9,12 @@ import { useNavigate } from 'react-router-dom';
 
 const Restablecer = () => {
     const navigate = useNavigate();
-    
+
     const { token } = useParams();
 
     const [form, setForm] = useState({
-        password:"",
-        confirmpassword:""
+        password: "",
+        confirmpassword: ""
     })
 
     const handleChange = (e) => {
@@ -24,32 +24,32 @@ const Restablecer = () => {
         })
     }
 
-const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/nuevo-password/${token}`
-            const respuesta = await axios.post(url,form)
+            const respuesta = await axios.post(url, form)
             setForm({})
-            setMensaje({respuesta:respuesta.data.msg,tipo:true})
-						setTimeout(() => {
+            setMensaje({ respuesta: respuesta.data.msg, tipo: true })
+            setTimeout(() => {
                 navigate('/login');
             }, 3000);
-        } catch (error) { 
-            setMensaje({respuesta:error.response.data.msg,tipo:false})
+        } catch (error) {
+            setMensaje({ respuesta: error.response.data.msg, tipo: false })
         }
     }
 
     const [mensaje, setMensaje] = useState({})
-		const [tokenback, setTokenBack] = useState(false)
-    
-		const verifyToken = async()=>{
+    const [tokenback, setTokenBack] = useState(false)
+
+    const verifyToken = async () => {
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/recuperar-password/${token}`
             const respuesta = await axios.get(url)
-						setTokenBack(true)
-            setMensaje({respuesta:respuesta.data.msg,tipo:true})
+            setTokenBack(true)
+            setMensaje({ respuesta: respuesta.data.msg, tipo: true })
         } catch (error) {
-            setMensaje({respuesta:error.response.data.msg,tipo:false})
+            setMensaje({ respuesta: error.response.data.msg, tipo: false })
         }
     }
     useEffect(() => {
@@ -60,7 +60,7 @@ const handleSubmit = async(e) => {
     return (
         <div className="flex flex-col items-center justify-center">
             {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
-                  <h1 className="text-3xl font-semibold mb-2 text-center uppercase  text-gray-500">Bienvenido nuevamente</h1>
+            <h1 className="text-3xl font-semibold mb-2 text-center uppercase  text-gray-500">Bienvenido nuevamente</h1>
             <small className="text-gray-400 block my-4 text-sm">Por favor ingresa la nueva información</small>
             <img className="object-cover h-80 w-80 rounded-full border-4 border-solid border-slate-600" src={logoDog} alt="image description" />
             {tokenback &&
@@ -86,7 +86,7 @@ const handleSubmit = async(e) => {
                 </form>
             }
         </div>
-      )      
+    )
 }
 
 export default Restablecer

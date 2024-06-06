@@ -9,7 +9,7 @@ import { useContext } from 'react'
 const Perfil = () => {
     const auth = useContext(AuthContext)
     return (
-        <>       
+        <>
             <div>
                 <h1 className='font-black text-4xl text-gray-500'>Perfil</h1>
                 <hr className='my-4' />
@@ -18,15 +18,15 @@ const Perfil = () => {
 
             {
                 "propietario" in auth.auth
-                    ? (<CardPerfilPaciente/>)
+                    ? (<CardPerfilPaciente />)
                     : (
                         <div className='flex justify-around gap-x-8 flex-wrap gap-y-8 md:flex-nowrap'>
                             <div className='w-full md:w-1/2'>
-                                <FormularioPerfil/>
+                                <FormularioPerfil />
                             </div>
                             <div className='w-full md:w-1/2'>
-                                <CardPerfil/>
-                                <Password/>
+                                <CardPerfil />
+                                <Password />
                             </div>
                         </div>
                     )

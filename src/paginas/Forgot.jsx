@@ -1,30 +1,30 @@
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import axios from 'axios';
 import Mensaje from '../componets/Alertas/Mensaje';
 
 export const Forgot = () => {
-    
+
     const [mensaje, setMensaje] = useState({})
-	const [mail, setMail] = useState({})
-    
-    const handleChange = (e)=>{
+    const [mail, setMail] = useState({})
+
+    const handleChange = (e) => {
         setMail({
             ...mail,
-            [e.target.name]:e.target.value
+            [e.target.name]: e.target.value
         })
     }
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/recuperar-password`
-            const respuesta = await axios.post(url,mail)
-            setMensaje({respuesta:respuesta.data.msg,tipo:true})
+            const respuesta = await axios.post(url, mail)
+            setMensaje({ respuesta: respuesta.data.msg, tipo: true })
             setMail("")
-        } catch (error) { 
-            setMensaje({respuesta:error.response.data.msg,tipo:false})
+        } catch (error) {
+            setMensaje({ respuesta: error.response.data.msg, tipo: false })
         }
     }
 
@@ -34,7 +34,7 @@ export const Forgot = () => {
             <div className="bg-white flex justify-center items-center w-1/2">
 
                 <div className="md:w-4/5 sm:w-full">
-                    {Object.keys(mensaje).length>0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
+                    {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
 
                     <h1 className="text-3xl font-semibold mb-2 text-center uppercase  text-gray-500">¡Olvidaste tu contraseña!</h1>
                     <small className="text-gray-400 block my-4 text-sm">No te preocupes, por favor ingresa tus datos</small>
@@ -44,10 +44,10 @@ export const Forgot = () => {
 
                         <div className="mb-1">
                             <label className="mb-2 block text-sm font-semibold">Email</label>
-                            <input type="email" 
-                            name='email' 
-		                    onChange={handleChange}
-                            placeholder="Ingresa tu email" className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-1.5 text-gray-500" />
+                            <input type="email"
+                                name='email'
+                                onChange={handleChange}
+                                placeholder="Ingresa tu email" className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-1.5 text-gray-500" />
                         </div>
 
                         <div className="mb-3">

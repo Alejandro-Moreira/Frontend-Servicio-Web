@@ -1,7 +1,7 @@
 // src/OrderStatus.js
 import React, { useState } from 'react';
 
-const OrderStatus = () => {
+const Pedido = () => {
   const [status, setStatus] = useState('En preparación');
   const [notification, setNotification] = useState('');
 
@@ -28,4 +28,4 @@ const OrderStatus = () => {
   );
 };
 
-export default OrderStatus;
+export default Pedido;
