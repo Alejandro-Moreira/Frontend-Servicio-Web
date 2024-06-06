@@ -22,18 +22,25 @@ export const Register = () => {
             })
     }
 
-    const handleSubmit = async(e) => { 
-        e.preventDefault()
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/registro`
-            const respuesta = await axios.post(url,form)
-            setMensaje({respuesta:respuesta.data.msg,tipo:true})
-            setform({})
+            const url = `${import.meta.env.VITE_BACKEND_URL}/login/registro`
+            const respuesta = await axios.post(url, form);
+            setMensaje({ respuesta: respuesta.data.msg, tipo: true })
+            setform({
+                nombre: "",
+                apellido: "",
+                direccion: "",
+                telefono: "",
+                email: "",
+                password: ""
+            });
         } catch (error) {
-            setMensaje({respuesta:error.response.data?.errors[0].msg,tipo:false})
+            setMensaje({ respuesta: error.response.data?.errors[0].msg, tipo: false })
         }
     }
-
+    
     return (
         <>
             <div className="bg-white flex justify-center items-center w-1/2">
