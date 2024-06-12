@@ -12,30 +12,36 @@ import {
     MDBCardText,
 } from "mdb-react-ui-kit";
 
-export const Catalogo = () => {
-    const [productos, setProductos] = useState([]);
-    const [cartItems, setCartItems] = useState([]);
+export const Favoritos = () => {
+    const [favoritos, setFavoritos] = useState([]);
 
     useEffect(() => {
-        // Fetch products from the backend
-        axios.get('/productos/listar')
+        // Fetch favorites from the backend
+        axios.get('/favoritos/listar', { withCredentials: true })
             .then(response => {
-                setProductos(response.data);
+                setFavoritos(response.data);
             })
             .catch(error => {
-                console.error('Error fetching products:', error);
+                console.error('Error fetching favorites:', error);
             });
     }, []);
 
-    const addToCart = (item) => {
-        setCartItems([...cartItems, item]);
+    const handleRemoveFavorito = (id) => {
+        axios.delete(`/favoritos/borrar/${id}`, { withCredentials: true })
+            .then(response => {
+                // Remove the favorite from the state
+                setFavoritos(favoritos.filter(favorito => favorito.id !== id));
+            })
+            .catch(error => {
+                console.error('Error deleting favorite:', error);
+            });
     };
 
     return (
         <MDBContainer className='bg-white px-10 md:px-20 lg:px-40'>
             <section>
                 <nav className='p-10 mb-12 flex justify-between'>
-                    <h1 className='text-2xl font-bold'>Minimarket "Mika y Vale"</h1>
+                    <h1 className='text-2xl font-bold'>Mis Favoritos</h1>
                     <ul className='flex items-center'>
                         <li>
                             <Link to="/logout" className='bg-gray-600 text-slate-400 px-6 py-2 rounded-full ml-8 hover:bg-gray-900 hover:text-white'>
@@ -46,7 +52,7 @@ export const Catalogo = () => {
                 </nav>
 
                 <div className='text-center'>
-                    <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos Disponibles</h2>
+                    <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Favoritos</h2>
                 </div>
             </section>
 
@@ -54,15 +60,15 @@ export const Catalogo = () => {
                 <MDBRow>
                     <MDBCol md='12'>
                         <MDBRow className='g-4'>
-                            {productos.map((producto, index) => (
-                                <React.Fragment key={producto.id}>
+                            {favoritos.map((favorito, index) => (
+                                <React.Fragment key={favorito.id}>
                                     <MDBCol md='3'>
                                         <MDBCard className='shadow-2xl p-10 rounded-xl my-10'>
-                                            <img className='mx-auto h-40 w-40' src={producto.imagen} alt={producto.nombre} />
+                                            <img className='mx-auto h-40 w-40' src={favorito.imagen} alt={favorito.nombre} />
                                             <MDBCardBody>
-                                                <MDBCardTitle className='text-lg font-medium pt-8 pb-2'>{producto.nombre}</MDBCardTitle>
-                                                <MDBCardText className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</MDBCardText>
-                                                <MDBBtn onClick={() => addToCart(producto)} color='primary'>Comprar</MDBBtn>
+                                                <MDBCardTitle className='text-lg font-medium pt-8 pb-2'>{favorito.nombre}</MDBCardTitle>
+                                                <MDBCardText className='text-gray-800 py-1'>$ {favorito.precio.toFixed(2)}</MDBCardText>
+                                                <MDBBtn onClick={() => handleRemoveFavorito(favorito.id)} color='danger'>Eliminar</MDBBtn>
                                             </MDBCardBody>
                                         </MDBCard>
                                     </MDBCol>

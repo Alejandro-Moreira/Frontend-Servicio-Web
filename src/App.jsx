@@ -6,9 +6,8 @@ import { LandinPage } from './paginas/LandinPage';
 import { Register } from './paginas/Register';
 import { Forgot } from './paginas/Forgot';
 import { NotFound } from './paginas/NotFound';
-import Pedido from './paginas/Pedidos'; // Importa Pedido desde Pedidos.jsx
-import Factura from './paginas/Factura'; // Importa Factura desde Factura.jsx
-import HistorialPedidos from './paginas/HistorialPedidos'; // Importa HistorialPedidos desde HistorialPedidos.jsx
+import Pedido from './paginas/Pedidos'; 
+import HistorialPedidos from './paginas/Historial'; 
 import Dashboard from './layout/Dashboard';
 import Listar from './paginas/Listar';
 import Visualizar from './paginas/Visualizar';
@@ -21,6 +20,8 @@ import { AuthProvider } from './context/AuthProvider';
 import { PrivateRoute } from './routes/PrivateRoute';
 import { TratamientosProvider } from './context/TratamientosProvider';
 import PrivateRouteWithRole from './routes/PrivateRouteWithRole';
+import { Catalogo } from './paginas/Catalogo';
+import Categoria from './paginas/Categoria';
 
 function App() {
   return (
@@ -34,22 +35,16 @@ function App() {
                 <Route path='login' element={<Login />} />
                 <Route path='login/registro' element={<Register />} />
                 <Route path='forgot/:id' element={<Forgot />} />
-                <Route path='confirmar/:token' element={<Confirmar />} />
-                <Route path='recuperar-password/:token' element={<Restablecer />} />
+                <Route path='login/confirmar/:token' element={<Confirmar />} />
+                <Route path='login/recuperar-password/:token' element={<Restablecer />} />
                 <Route path='*' element={<NotFound />} />
               </Route>
               <Route path='dashboard/*' element={
                 <PrivateRoute>
                   <Routes>
                     <Route element={<Dashboard />}>
-                      <Route index element={<Perfil />} />
-                      <Route path='listar' element={<Listar />} />
-                      <Route path='visualizar/:id' element={<Visualizar />} />
-                      <Route path='crear' element={
-                        <PrivateRouteWithRole>
-                          <Crear />
-                        </PrivateRouteWithRole>
-                      } />
+                      <Route index element={<Catalogo />} />
+
                       <Route path='actualizar/:id' element={<Actualizar />} />
                     </Route>
                   </Routes>
@@ -57,7 +52,6 @@ function App() {
               } />
               {/* Rutas para Pedido, Factura y HistorialPedidos */}
               <Route path='pedidos' element={<Pedido />} />
-              <Route path='factura' element={<Factura />} />
               <Route path='historial' element={<HistorialPedidos />} />
             </Routes>
           </TratamientosProvider>

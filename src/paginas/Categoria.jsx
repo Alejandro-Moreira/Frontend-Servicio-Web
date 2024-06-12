@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import axiosInstance from "../axiosInstance";
+import axios from "axios";
 import {
   MDBContainer,
   MDBRow,
@@ -16,13 +16,12 @@ import {
   MDBBadge,
 } from "mdb-react-ui-kit";
 import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import SuccessMessage from "../SuccessMessage";
-import "./style.css";
+import Mensaje from '../componets/Alertas/Mensaje';
 
-export function ProductsList() {
+export function Categoria() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [error, setError] = useState(null);
@@ -35,6 +34,7 @@ export function ProductsList() {
   const categoryParam = searchParams.get("category");
 
   useEffect(() => {
+    fetchCategories();
     fetchProducts();
   }, []);
 
@@ -44,9 +44,18 @@ export function ProductsList() {
     }
   }, [categoryParam]);
 
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/categoria/listar");
+      setCategories(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const fetchProducts = async () => {
     try {
-      const response = await axiosInstance.get("/products");
+      const response = await axios.get("/products");
       setProducts(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -110,9 +119,9 @@ export function ProductsList() {
       return;
     }
 
-    const cartCookie = Cookies.get("carrito");
+    const cartCookie = Cookies.get("Carrito");
     if (!cartCookie) {
-      Cookies.set("carrito", "carrito creado");
+      Cookies.set("Carrito", "Carrito creado");
 
       try {
         const idUser = Cookies.get("id_user");
@@ -121,11 +130,11 @@ export function ProductsList() {
           return;
         }
 
-        const response = await axiosInstance.post("/cart/create", { id_user: parseInt(idUser) });
+        const response = await axios.post("/cart/create", { id_user: parseInt(idUser) });
         Cookies.set("infocart", JSON.stringify(response.data));
         const cartId = response.data["cart id"];
 
-        const addProductResponse = await axiosInstance.post("/cart/add", {
+        const addProductResponse = await axios.post("/cart/add", {
           id_cart: cartId,
           id_producto: product.id,
           cantidad: parseInt(product.cantidad),
@@ -145,7 +154,7 @@ export function ProductsList() {
         const infocartData = JSON.parse(infocartCookie);
         cartId = infocartData["cart id"];
 
-        const addProductResponse = await axiosInstance.post("/cart/add", {
+        const addProductResponse = await axios.post("/cart/add", {
           id_cart: cartId,
           id_producto: product.id,
           cantidad: parseInt(product.cantidad),
@@ -182,9 +191,9 @@ export function ProductsList() {
             <MDBCol md="6" className="mb-4">
               <select className="form-select" aria-label="Category" value={categoryFilter} onChange={handleCategoryFilter}>
                 <option value="">Todas las Categorías</option>
-                <option value="1">Alimentos</option>
-                <option value="2">Limpieza</option>
-                <option value="3">Tecnología</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>{category.nombre}</option>
+                ))}
               </select>
             </MDBCol>
           </MDBRow>
@@ -212,9 +221,9 @@ export function ProductsList() {
                   </div>
                   <MDBCardBody>
                     <MDBCardTitle>
-                      <a href="#!" className="text-reset text-decoration-none">
+                      <Link to={`/product/${product.id}`} className="text-reset text-decoration-none">
                         {product.nombre_producto}
-                      </a>
+                      </Link>
                     </MDBCardTitle>
                     <MDBCardText>{product.detalle}</MDBCardText>
                     <h6 className="mb-3">${product.valor_venta}</h6>
@@ -257,7 +266,7 @@ export function ProductsList() {
           </MDBRow>
 
           {error && (
-            <SuccessMessage
+            <Mensaje
               title="Error al agregar al carrito"
               message={error}
               onClose={() => setError(null)}
@@ -269,4 +278,4 @@ export function ProductsList() {
   );
 }
 
-export default ProductsList;
+export default Categoria;

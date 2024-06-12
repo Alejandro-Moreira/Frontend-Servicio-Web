@@ -1,4 +1,4 @@
-import logoDog from '../assets/dog-hand.webp'
+import LogoRestablecer from '../assets/restablecer.png'
 import { Link } from 'react-router-dom'
 import Mensaje from '../componets/Alertas/Mensaje'
 import { useEffect, useState } from 'react'
@@ -27,7 +27,7 @@ const Restablecer = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/nuevo-password/${token}`
+            const url = `${import.meta.env.VITE_BACKEND_URL}/login/nuevo-password/${token}`
             const respuesta = await axios.post(url, form)
             setForm({})
             setMensaje({ respuesta: respuesta.data.msg, tipo: true })
@@ -44,7 +44,7 @@ const Restablecer = () => {
 
     const verifyToken = async () => {
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/recuperar-password/${token}`
+            const url = `${import.meta.env.VITE_BACKEND_URL}/login/recuperar-password/${token}`
             const respuesta = await axios.get(url)
             setTokenBack(true)
             setMensaje({ respuesta: respuesta.data.msg, tipo: true })
@@ -62,7 +62,7 @@ const Restablecer = () => {
             {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
             <h1 className="text-3xl font-semibold mb-2 text-center uppercase  text-gray-500">Bienvenido nuevamente</h1>
             <small className="text-gray-400 block my-4 text-sm">Por favor ingresa la nueva información</small>
-            <img className="object-cover h-80 w-80 rounded-full border-4 border-solid border-slate-600" src={logoDog} alt="image description" />
+            <img className="object-cover h-80 w-80 rounded-full border-4 border-solid border-slate-600" src={LogoRestablecer} alt="image description" />
             {tokenback &&
                 <form className='w-full' onSubmit={handleSubmit}>
                     <div className="mb-1">
