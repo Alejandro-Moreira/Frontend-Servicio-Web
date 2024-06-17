@@ -1,181 +1,155 @@
-import React from "react";
-import { useContext, useState } from "react"
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Mensaje from "./Alertas/Mensaje";
 
-
-export const Formulario = ({ paciente }) => {
-
-
-    const navigate = useNavigate()
-    const [mensaje, setMensaje] = useState({})
-    const [form, setform] = useState({
-        nombre: paciente?.nombre ?? "",
-        propietario: paciente?.propietario ?? "",
-        email: paciente?.email ?? "",
-        celular: paciente?.celular ?? "",
-        salida: new Date(paciente?.salida).toLocaleDateString('en-CA', { timeZone: 'UTC' }) ?? "",
-        convencional: paciente?.convencional ?? "",
-        sintomas: paciente?.sintomas ?? ""
-    })
+export const Formulario = () => {
+    const navigate = useNavigate();
+    const [mensaje, setMensaje] = useState({});
+    const [form, setForm] = useState({
+        nombre: "",
+        categoria: "",
+        precio: "",
+        cantidad: "",
+        descripcion: ""
+    });
+    const [imagen, setImagen] = useState(null);
 
     const handleChange = (e) => {
-        setform({
+        setForm({
             ...form,
             [e.target.name]: e.target.value
-        })
-    }
+        });
+    };
+
+    const handleImageChange = (e) => {
+        setImagen(e.target.files[0]);
+    };
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        if (paciente?._id) {
-            const token = localStorage.getItem('token')
-            const url = `${import.meta.env.VITE_BACKEND_URL}/paciente/actualizar/${paciente?._id}`
-            const options = {
-                headers: {
-                    method: 'PUT',
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            }
-            await axios.put(url, form, options)
-            navigate('/dashboard/listar')
+        e.preventDefault();
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            setMensaje({ respuesta: 'No estás autenticado', tipo: false });
+            return;
         }
-        else {
-            try {
-                const token = localStorage.getItem('token')
-                const url = `${import.meta.env.VITE_BACKEND_URL}/paciente/registro`
-                const options = {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-                await axios.post(url, form, options)
-                setMensaje({ respuesta: "paciente registrado con exito y correo enviado", tipo: true })
+
+        const formData = new FormData();
+        formData.append('cliente', userId);
+
+        for (const key in form) {
+            formData.append(key, form[key]);
+        }
+
+        if (imagen) {
+            formData.append('imagen', imagen);
+        }
+
+        const options = {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        };
+
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/productos/registro`;
+            console.log('URL:', url); // Verificar la URL
+            const respuesta = await axios.post(url, formData, options);
+
+            if (respuesta.status === 200) {
+                setMensaje({ respuesta: 'Producto registrado con éxito', tipo: true });
                 setTimeout(() => {
                     navigate('/dashboard/listar');
                 }, 3000);
-            } catch (error) {
-                setMensaje({ respuesta: error.response.data.msg, tipo: false })
-                setTimeout(() => {
-                    setMensaje({})
-                }, 3000);
+            } else {
+                setMensaje({ respuesta: respuesta.data.message, tipo: false });
             }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+            setMensaje({ respuesta: error.response?.data?.message || 'Hubo un error', tipo: false });
+            setTimeout(() => setMensaje({}), 3000);
         }
-    }
-
-
+    };
 
     return (
-
         <form onSubmit={handleSubmit}>
             {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
             <div>
-                <label
-                    htmlFor='nombre:'
-                    className='text-gray-700 uppercase font-bold text-sm'>Nombre de la mascota: </label>
+                <label htmlFor='nombre' className='text-gray-700 uppercase font-bold text-sm'>Nombre del Producto:</label>
                 <input
                     id='nombre'
                     type="text"
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
-                    placeholder='nombre de la mascota'
+                    placeholder='Nombre del producto'
                     name='nombre'
+                    value={form.nombre}
                     onChange={handleChange}
                 />
             </div>
             <div>
-                <label
-                    htmlFor='propietario:'
-                    className='text-gray-700 uppercase font-bold text-sm'>Nombre del propietario: </label>
+                <label htmlFor='categoria' className='text-gray-700 uppercase font-bold text-sm'>Categoría:</label>
                 <input
-                    id='propietario'
+                    id='categoria'
                     type="text"
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
-                    placeholder='nombre del propietario'
-                    name='propietario'
+                    placeholder='Categoría del producto'
+                    name='categoria'
+                    value={form.categoria}
                     onChange={handleChange}
                 />
             </div>
             <div>
-                <label
-                    htmlFor='email:'
-                    className='text-gray-700 uppercase font-bold text-sm'>Email: </label>
+                <label htmlFor='precio' className='text-gray-700 uppercase font-bold text-sm'>Precio:</label>
                 <input
-                    id='email'
-                    type="email"
-                    className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
-                    placeholder='email del propietario'
-                    name='email'
-                    value={form.email}
-                    onChange={handleChange}
-                />
-            </div>
-            <div>
-                <label
-                    htmlFor='celular:'
-                    className='text-gray-700 uppercase font-bold text-sm'>Celular: </label>
-                <input
-                    id='celular'
+                    id='precio'
                     type="number"
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
-                    placeholder='celular del propietario'
-                    name='celular'
-                    value={form.celular}
+                    placeholder='Precio del producto'
+                    name='precio'
+                    value={form.precio}
                     onChange={handleChange}
                 />
             </div>
             <div>
-                <label
-                    htmlFor='convencional:'
-                    className='text-gray-700 uppercase font-bold text-sm'>Convencional: </label>
+                <label htmlFor='cantidad' className='text-gray-700 uppercase font-bold text-sm'>Cantidad:</label>
                 <input
-                    id='convencional'
+                    id='cantidad'
                     type="number"
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
-                    placeholder='convencional del propietario'
-                    name='convencional'
-                    value={form.convencional}
+                    placeholder='Cantidad del producto'
+                    name='cantidad'
+                    value={form.cantidad}
                     onChange={handleChange}
                 />
             </div>
             <div>
-                <label
-                    htmlFor='Salida:'
-                    className='text-gray-700 uppercase font-bold text-sm'>Fecha de salida: </label>
-                <input
-                    id='salida'
-                    type="date"
-                    className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
-                    placeholder='salida'
-                    name='salida'
-                    value={form.salida}
-                    onChange={handleChange}
-                />
-            </div>
-            <div>
-                <label
-                    htmlFor='sintomas:'
-                    className='text-gray-700 uppercase font-bold text-sm'>Síntomas: </label>
+                <label htmlFor='descripcion' className='text-gray-700 uppercase font-bold text-sm'>Descripción:</label>
                 <textarea
-                    id='sintomas'
-                    type="text"
+                    id='descripcion'
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
-                    placeholder='Ingrese los síntomas de la mascota'
-                    name='sintomas'
-                    value={form.sintomas}
+                    placeholder='Descripción del producto'
+                    name='descripcion'
+                    value={form.descripcion}
                     onChange={handleChange}
+                />
+            </div>
+            <div>
+                <label htmlFor='imagen' className='text-gray-700 uppercase font-bold text-sm'>Imagen:</label>
+                <input
+                    id='imagen'
+                    type="file"
+                    className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
+                    onChange={handleImageChange}
                 />
             </div>
 
             <input
                 type="submit"
-                className='bg-gray-600 w-full p-3 
-                    text-slate-300 uppercase font-bold rounded-lg 
-                    hover:bg-gray-900 cursor-pointer transition-all'
-                value={paciente?._id ? 'Actualizar paciente' : 'Registrar paciente'} />
-
+                className='bg-gray-600 w-full p-3 text-slate-300 uppercase font-bold rounded-lg hover:bg-gray-900 cursor-pointer transition-all'
+                value='Registrar Producto'
+            />
         </form>
-    )
-}
+    );
+};
+
+export default Formulario;

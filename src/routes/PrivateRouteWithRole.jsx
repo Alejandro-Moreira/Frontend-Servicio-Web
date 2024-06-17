@@ -1,14 +1,11 @@
-import AuthContext from '../context/AuthProvider';
 import { useContext } from 'react';
-import { Forbidden } from '../paginas/Forbidden';
+import { Navigate, Outlet } from 'react-router-dom';
+import AuthContext from '../context/AuthProvider';
 
+const PrivateRouteWithRole = ({ allowedRoles }) => {
+    const { auth } = useContext(AuthContext);
 
-export default function PrivateRouteWithRole({ children }) {
-    const { auth } = useContext(AuthContext)
+    return allowedRoles.includes(auth.rol) ? <Outlet /> : <Navigate to="/forbidden" />;
+};
 
-    if ("paciente" === auth.rol) {
-        return <Forbidden />
-    } else {
-        return children
-    }
-}
+export default PrivateRouteWithRole;

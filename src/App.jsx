@@ -17,47 +17,45 @@ import Perfil from './paginas/Perfil';
 import { Confirmar } from './paginas/Confirmar';
 import Restablecer from './paginas/Restablecer';
 import { AuthProvider } from './context/AuthProvider';
-import { PrivateRoute } from './routes/PrivateRoute';
-import { TratamientosProvider } from './context/TratamientosProvider';
+import PrivateRoute from './routes/PrivateRoute';
 import PrivateRouteWithRole from './routes/PrivateRouteWithRole';
 import { Catalogo } from './paginas/Catalogo';
 import Categoria from './paginas/Categoria';
+import { Forbidden } from './paginas/Forbidden';
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <AuthProvider>
-          <TratamientosProvider>
-            <Routes>
-              <Route index element={<LandinPage />} />
-              <Route path='/' element={<Auth />}>
-                <Route path='login' element={<Login />} />
-                <Route path='login/registro' element={<Register />} />
-                <Route path='forgot/:id' element={<Forgot />} />
-                <Route path='login/confirmar/:token' element={<Confirmar />} />
-                <Route path='login/recuperar-password/:token' element={<Restablecer />} />
-                <Route path='*' element={<NotFound />} />
-              </Route>
-              <Route path='dashboard/*' element={
-                <PrivateRoute>
-                  <Routes>
-                    <Route element={<Dashboard />}>
-                      <Route index element={<Catalogo />} />
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route index element={<LandinPage />} />
+          <Route path='/' element={<Auth />}>
+            <Route path='login' element={<Login />} />
+            <Route path='login/registro' element={<Register />} />
+            <Route path='forgot/:id' element={<Forgot />} />
+            <Route path='login/confirmar/:token' element={<Confirmar />} />
+            <Route path='login/recuperar-password/:token' element={<Restablecer />} />
+            <Route path='*' element={<NotFound />} />
+          </Route>
+          
+          <Route path='dashboard/*' element={<PrivateRoute />}>
+            <Route element={<Dashboard />}>
+              <Route index element={<Catalogo />} />
+              <Route path='crear-producto' element={<Crear />} />
 
-                      <Route path='actualizar/:id' element={<Actualizar />} />
-                    </Route>
-                  </Routes>
-                </PrivateRoute>
-              } />
-              {/* Rutas para Pedido, Factura y HistorialPedidos */}
+              <Route path='listar' element={<Listar />} />
+              <Route path='crear' element={<Crear />} />
+              <Route path='actualizar/:id' element={<Actualizar />} />
+              <Route path='crear-producto' element={<div>Gestión para Admin</div>} />
               <Route path='pedidos' element={<Pedido />} />
-              <Route path='historial' element={<HistorialPedidos />} />
-            </Routes>
-          </TratamientosProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </>
+              <Route path='compras' element={<HistorialPedidos />} />
+            </Route>
+          </Route>
+
+          <Route path='/forbidden' element={<Forbidden />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

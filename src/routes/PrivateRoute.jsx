@@ -1,12 +1,12 @@
-// Importacion de Navigate
-import { Navigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+import AuthContext from '../context/AuthProvider';
 
-// Verificar las rutas privadas
-//                              componentes
-export const PrivateRoute = ({ children }) => {
-    // Obtener el token del localStorage
-    const autenticado = localStorage.getItem('token')
-    // Si el usuario tiene token entonces navega a las rutas siguientes
-    // caso contrario navega al login
-    return (autenticado) ? children : <Navigate to='/login' />
-}
+const PrivateRoute = () => {
+    const { auth } = useContext(AuthContext);
+    const autenticado = localStorage.getItem('token');
+
+    return autenticado ? <Outlet /> : <Navigate to="/login" />;
+};
+
+export default PrivateRoute;
