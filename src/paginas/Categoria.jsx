@@ -198,6 +198,22 @@ export function Categoria() {
             </MDBCol>
           </MDBRow>
 
+          <h2 className="title" style={{ paddingBottom: "50px" }}>
+            Categorías
+          </h2>
+
+          <MDBRow>
+            {categories.map((category) => (
+              <MDBCol md="12" lg="4" className="mb-4" key={category.id}>
+                <MDBCard>
+                  <MDBCardBody>
+                    <MDBCardTitle>{category.categoria}</MDBCardTitle>
+                  </MDBCardBody>
+                </MDBCard>
+              </MDBCol>
+            ))}
+          </MDBRow>
+
           <MDBRow>
             {filteredProducts.map((product) => (
               <MDBCol md="12" lg="4" className="mb-4" key={product.id}>

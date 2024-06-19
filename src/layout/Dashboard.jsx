@@ -14,16 +14,13 @@ const Dashboard = () => {
                 return (
                     <>
                         <li className="text-center">
-                            <Link to='/dashboard/crear-producto' className={`${urlActual === '/dashboard/crear-producto' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Crear</Link>
-                        </li>
-                        <li className="text-center">
                             <Link to='/dashboard/listar-producto' className={`${urlActual === '/dashboard/listar-producto' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Listar</Link>
                         </li>
                         <li className="text-center">
-                            <Link to='/dashboard/editar-producto' className={`${urlActual === '/dashboard/editar-producto' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Actualizar</Link>
+                            <Link to='/dashboard/categoria-listar' className={`${urlActual === '/dashboard/categoria-listar' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Categorías</Link>
                         </li>
                         <li className="text-center">
-                            <Link to='/dashboard/eliminar-producto' className={`${urlActual === '/dashboard/eliminar-producto' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Borrar</Link>
+                            <Link to='/dashboard/cajero-listar' className={`${urlActual === '/dashboard/cajero-listar' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Cajeros</Link>
                         </li>
                     </>
                 );
@@ -44,7 +41,6 @@ const Dashboard = () => {
                         <li className="text-center">
                             <Link to='/dashboard/compras' className={`${urlActual === '/dashboard/compras' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Mis Compras</Link>
                         </li>
-
                     </>
                 );
             default:

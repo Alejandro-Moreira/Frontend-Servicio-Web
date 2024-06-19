@@ -83,19 +83,19 @@ const Tabla = () => {
                                         <td>{producto.cantidad}</td>
                                         <td>{producto.descripcion}</td>
                                         <td>
-                                            {producto.imagen && <img src={producto.imagen.secure_url} alt={producto.nombre} className="w-20 h-20 object-cover"/>} {/* Mostrar imagen */}
+                                            {producto.imagen && <img src={producto.imagen.secure_url} alt={producto.nombre} className="w-20 h-20 object-cover" />} {/* Mostrar imagen */}
                                         </td>
                                         <td className='py-2 text-center'>
-                                            <MdNoteAdd className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2" onClick={() => navigate(`/dashboard/visualizar/${producto._id}`)} />
-
                                             {
                                                 auth.rol === "admin" && (
                                                     <>
-                                                        <MdInfo className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2"
-                                                            onClick={() => navigate(`/dashboard/actualizar/${producto._id}`)}
+                                                        <MdInfo
+                                                            className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2"
+                                                            onClick={() => navigate(`/dashboard/actualizar-producto/${producto._id}`)}
                                                         />
+
                                                         <MdDeleteForever className="h-7 w-7 text-red-900 cursor-pointer inline-block"
-                                                            onClick={() => { handleDelete(producto._id) }}
+                                                            onClick={() => navigate(`/dashboard/eliminar-producto/${producto._id}`)}
                                                         />
                                                     </>
                                                 )

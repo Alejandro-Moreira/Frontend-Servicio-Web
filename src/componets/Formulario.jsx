@@ -59,7 +59,7 @@ export const Formulario = () => {
             if (respuesta.status === 200) {
                 setMensaje({ respuesta: 'Producto registrado con éxito', tipo: true });
                 setTimeout(() => {
-                    navigate('/dashboard/listar');
+                    navigate('/dashboard/listar-producto');
                 }, 3000);
             } else {
                 setMensaje({ respuesta: respuesta.data.message, tipo: false });
