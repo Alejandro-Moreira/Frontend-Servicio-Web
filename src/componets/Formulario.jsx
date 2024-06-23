@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Mensaje from "./Alertas/Mensaje";
@@ -14,6 +14,23 @@ export const Formulario = () => {
         descripcion: ""
     });
     const [imagen, setImagen] = useState(null);
+    const [categorias, setCategorias] = useState([]);
+
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            try {
+                const url = `${import.meta.env.VITE_BACKEND_URL}/categoria/listar`;
+                const respuesta = await axios.get(url);
+                if (respuesta.status === 200) {
+                    setCategorias(respuesta.data);
+                }
+            } catch (error) {
+                console.error("Error al obtener las categorías:", error);
+            }
+        };
+
+        fetchCategorias();
+    }, []);
 
     const handleChange = (e) => {
         setForm({
@@ -31,6 +48,13 @@ export const Formulario = () => {
         const userId = localStorage.getItem('userId');
         if (!userId) {
             setMensaje({ respuesta: 'No estás autenticado', tipo: false });
+            return;
+        }
+
+        // Verificar si la categoría existe en la lista obtenida
+        const categoriaExistente = categorias.find(cat => cat.categoria.toUpperCase() === form.categoria.toUpperCase());
+        if (!categoriaExistente) {
+            setMensaje({ respuesta: 'Categoría inexistente', tipo: false });
             return;
         }
 

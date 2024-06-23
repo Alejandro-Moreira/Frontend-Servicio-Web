@@ -7,7 +7,8 @@ import { Register } from './paginas/Register';
 import { Forgot } from './paginas/Forgot';
 import { NotFound } from './paginas/NotFound';
 import Pedido from './paginas/Pedidos'; 
-import HistorialPedidos from './paginas/Historial'; 
+import HistorialPedidosAdmin from './paginas/HistorialPedidosAdmin'; 
+import HistorialVentasAdmin from './paginas/HistorialVentasAdmin';
 import Dashboard from './layout/Dashboard';
 import Listar from './paginas/Listar';
 import Crear from './paginas/Crear';
@@ -30,11 +31,15 @@ import ActualizarCajero from './paginas/ActualizarCajero'
 import CrearCajero from './paginas/CrearCajero';
 import BorrarCajero from './paginas/BorrarCajero';
 import { Forbidden } from './paginas/Forbidden';
+import CierreSesion from './paginas/CerrarSesion';
+import SessionTimeout from './paginas/SesionTimeout';
 
 function App() {
+  const TIMEOUT_DURATION = 5 * 60 * 1000; 
   return (
     <BrowserRouter>
       <AuthProvider>
+      <SessionTimeout timeout={TIMEOUT_DURATION}>
         <Routes>
           <Route index element={<LandinPage />} />
           <Route path='/' element={<Auth />}>
@@ -58,17 +63,21 @@ function App() {
               <Route path='categoria-registro' element={<CrearCategoria />} />
               <Route path='categoria-borrar/:id' element={<BorrarCategoria />} />
               <Route path='cajero-listar' element={<MostrarCajeros />} />
-              <Route path='cajero-actualizar' element={<ActualizarCajero />} />
+              <Route path='cajero-actualizar/:id' element={<ActualizarCajero />} />
               <Route path='cajero-registro' element={<CrearCajero />} />
               <Route path='cajero-borrar' element={<BorrarCajero />} />
+              <Route path='historial-pedidos' element={<HistorialPedidosAdmin />} />
+              <Route path='historial-ventas' element={<HistorialVentasAdmin />} />
+              <Route path="cerrar-sesion" element={<CierreSesion />} />
+
 
               <Route path='pedidos' element={<Pedido />} />
-              <Route path='compras' element={<HistorialPedidos />} />
             </Route>
           </Route>
 
           <Route path='/forbidden' element={<Forbidden />} />
         </Routes>
+        </SessionTimeout>
       </AuthProvider>
     </BrowserRouter>
   );

@@ -1,0 +1,66 @@
+// src/components/CierreSesion.jsx
+import React, { useContext, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthProvider'; 
+import Mensaje from '../componets/Alertas/Mensaje';
+
+const CierreSesion = () => {
+    const { auth, setAuth } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const [mensaje, setMensaje] = useState({});
+
+    const handleLogout = async () => {
+        const userId = auth.userId; // Usar el userId del contexto de autenticación
+        if (!userId) {
+            setMensaje({ respuesta: 'No estás autenticado', tipo: false });
+            return;
+        }
+
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/login/cierre?cliente=${userId}`;
+            console.log('URL:', url); // Verificar la URL
+            const response = await axios.get(url);
+            if (response.status === 200) {
+                setAuth({
+                    nombre: '',
+                    rol: '',
+                    token: '',
+                    userId: ''
+                }); // Limpiar el contexto de autenticación
+                localStorage.removeItem('token'); // Eliminar el token del almacenamiento local
+                localStorage.removeItem('userId'); // Eliminar el userId del almacenamiento local
+                localStorage.removeItem('nombre'); // Eliminar el nombre del almacenamiento local
+                localStorage.removeItem('rol'); // Eliminar el rol del almacenamiento local
+                setMensaje({ respuesta: 'Sesión cerrada con éxito', tipo: true });
+                navigate('/login');
+            } else {
+                setMensaje({ respuesta: 'Hubo un problema al cerrar la sesión', tipo: false });
+            }
+        } catch (error) {
+            console.error('Error al cerrar la sesión:', error);
+            setMensaje({ respuesta: 'Hubo un error al cerrar la sesión', tipo: false });
+        }
+    };
+
+    return (
+        <div className="logout-container">
+            <h2>¿Estás seguro de que quieres cerrar la sesión?</h2>
+            {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
+            <button 
+                onClick={handleLogout} 
+                className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-800 m-2"
+            >
+                Cerrar Sesión
+            </button>
+            <button 
+                onClick={() => navigate('/dashboard')} 
+                className="bg-gray-600 text-white px-6 py-2 rounded-full hover:bg-gray-800 m-2"
+            >
+                Cancelar
+            </button>
+        </div>
+    );
+};
+
+export default CierreSesion;

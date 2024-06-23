@@ -2,12 +2,16 @@ import React, { useState, useEffect, useContext } from 'react';
 import { MdDeleteForever, MdEdit, MdAddCircleOutline } from 'react-icons/md';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Mensaje from '../componets/Alertas/Mensaje'; 
 import AuthContext from '../context/AuthProvider';
+import Modal from 'react-modal';
 
 const ListarCategorias = () => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [error, setError] = useState(null);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -37,10 +41,26 @@ const ListarCategorias = () => {
     navigate(`/dashboard/categoria-borrar/${id}`);
   };
 
+  const handleViewProducts = async (categoria) => {
+    try {
+      const response = await axios.get(`${backendUrl}/productos/categoria/${categoria}`);
+      setProductos(response.data);
+      setModalIsOpen(true);
+    } catch (error) {
+      setError('Error al obtener los productos');
+      console.error('Error al obtener los productos', error);
+    }
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setProductos([]);
+  };
+
   return (
     <div className="my-5">
       <h1 className="font-black text-4xl text-gray-500 mb-5 text-center">Lista de Categorías</h1>
-      {error && <div className="alert alert-danger">{error}</div>}
+      {error && <Mensaje tipo="error">{error}</Mensaje>}
       <div className="text-center mb-4">
         <button className='bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-800 flex items-center mx-auto' onClick={handleCreate}>
           <MdAddCircleOutline className="h-7 w-7 mr-2" /> Crear Categoría
@@ -48,12 +68,13 @@ const ListarCategorias = () => {
       </div>
       {
         categorias.length === 0
-          ? <div className="alert alert-info">No existen registros</div>
+          ? <Mensaje tipo="informacion">No existen registros</Mensaje>
           : <table className='w-full mt-5 table-auto shadow-lg bg-white'>
               <thead className='bg-gray-800 text-slate-400'>
                 <tr>
                   <th className='p-2'>N°</th>
                   <th className='p-2'>Categoría</th>
+                  <th className='p-2'>Ver Productos</th>
                   <th className='p-2 text-center'>Acciones</th>
                 </tr>
               </thead>
@@ -63,6 +84,11 @@ const ListarCategorias = () => {
                     <tr className="border-b hover:bg-gray-300 text-center" key={categoria._id}>
                       <td className='p-2' title={categoria._id}>{index + 1}</td>
                       <td className='p-2'>{categoria.categoria}</td>
+                      <td className='p-2'>
+                        <button className='bg-blue-600 text-white px-3 py-1 rounded-full hover:bg-blue-800' onClick={() => handleViewProducts(categoria.categoria)}>
+                          Ver Productos
+                        </button>
+                      </td>
                       <td className='py-2 text-center'>
                         {
                           auth.rol === "admin" && (
@@ -83,6 +109,21 @@ const ListarCategorias = () => {
               </tbody>
             </table>
       }
+      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Productos de la Categoría">
+        <h2 className="text-xl font-bold mb-4">Productos de la Categoría</h2>
+        <button onClick={closeModal} className="absolute top-2 right-2 text-gray-600">X</button>
+        {
+          productos.length === 0
+            ? <Mensaje tipo="informacion">No hay productos para esta categoría</Mensaje>
+            : <ul>
+                {productos.map(producto => (
+                  <li key={producto._id} className="border-b p-2">
+                    {producto.nombre}
+                  </li>
+                ))}
+              </ul>
+        }
+      </Modal>
     </div>
   );
 };

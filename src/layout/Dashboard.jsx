@@ -22,6 +22,12 @@ const Dashboard = () => {
                         <li className="text-center">
                             <Link to='/dashboard/cajero-listar' className={`${urlActual === '/dashboard/cajero-listar' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Cajeros</Link>
                         </li>
+                        <li className="text-center">
+                            <Link to='/dashboard/historial-pedidos' className={`${urlActual === '/dashboard/historial-pedidos' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Pedidos</Link>
+                        </li>
+                        <li className="text-center">
+                            <Link to='/dashboard/historial-ventas' className={`${urlActual === '/dashboard/historial-ventas' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Ventas</Link>
+                        </li>
                     </>
                 );
             case 'cajero':
@@ -75,7 +81,9 @@ const Dashboard = () => {
                         <img src="https://cdn-icons-png.flaticon.com/512/4715/4715329.png" alt="img-client" className="border-2 border-green-600 rounded-full" width={50} height={50} />
                     </div>
                     <div>
-                        <Link to='/' className="text-white mr-3 text-md block hover:bg-red-900 text-center bg-red-800 px-4 py-1 rounded-lg" onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('rol'); localStorage.removeItem('nombre'); }}>Salir</Link>
+                        <Link to='cerrar-sesion' className="text-white mr-3 text-md block hover:bg-red-900 text-center bg-red-800 px-4 py-1 rounded-lg">
+                            Salir
+                        </Link>
                     </div>
                 </div>
                 <div className='overflow-y-scroll p-8'>

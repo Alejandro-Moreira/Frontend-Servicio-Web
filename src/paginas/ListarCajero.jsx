@@ -92,15 +92,15 @@ const MostrarCajeros = () => {
                       <td className='p-2'>{index + 1}</td>
                       <td className='p-2'>{cajero.username}</td>
                       <td className='p-2'>{cajero.email}</td>
-                      <td className='p-2'>{cajero.telefono}</td>
+                      <td className='p-2'>{`0${cajero.telefono}`}</td>
                       <td className='py-2 text-center'>
                         {
                           auth.rol === "admin" && (
                             <>
-                              <button className='btn btn-warning btn-sm mx-1' onClick={() => navigate(`/dashboard/cajero-actualizar`)}>
+                              <button className='btn btn-warning btn-sm mx-1' onClick={() => navigate(`/dashboard/cajero-actualizar/${cajero._id}`)}>
                                 <MdEdit className="h-7 w-7 text-slate-800" />
                               </button>
-                              <button className='btn btn-danger btn-sm mx-1' onClick={() => navigate(`/dashboard/cajero-borrar`)}>
+                              <button className='btn btn-danger btn-sm mx-1' onClick={() => handleDelete(cajero._id)}>
                                 <MdDeleteForever className="h-7 w-7 text-red-900" />
                               </button>
                             </>

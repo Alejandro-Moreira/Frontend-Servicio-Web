@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Mensaje from '../componets/Alertas/Mensaje';
@@ -15,6 +15,51 @@ const ActualizarProducto = () => {
         descripcion: ""
     });
     const [imagen, setImagen] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [categorias, setCategorias] = useState([]);
+
+    useEffect(() => {
+        // Cargar datos del producto
+        const cargarProducto = async () => {
+            try {
+                const url = `${import.meta.env.VITE_BACKEND_URL}/productos/listar`;
+                const { data } = await axios.get(url);
+                const producto = data.find(p => p._id === id);
+                if (producto) {
+                    setForm({
+                        nombre: producto.nombre || "",
+                        categoria: producto.categoria || "",
+                        precio: producto.precio || 0,
+                        cantidad: producto.cantidad || 0,
+                        descripcion: producto.descripcion || ""
+                    });
+                } else {
+                    setMensaje({ respuesta: 'Producto no encontrado', tipo: false });
+                }
+                setLoading(false);
+            } catch (error) {
+                console.error("Error al cargar el producto:", error);
+                setMensaje({ respuesta: 'Error al cargar el producto', tipo: false });
+                setLoading(false);
+            }
+        };
+
+        // Cargar categorías
+        const cargarCategorias = async () => {
+            try {
+                const url = `${import.meta.env.VITE_BACKEND_URL}/categoria/listar`;
+                const respuesta = await axios.get(url);
+                if (respuesta.status === 200) {
+                    setCategorias(respuesta.data);
+                }
+            } catch (error) {
+                console.error("Error al obtener las categorías:", error);
+            }
+        };
+
+        cargarProducto();
+        cargarCategorias();
+    }, [id]);
 
     const handleChange = (e) => {
         setForm({
@@ -35,12 +80,22 @@ const ActualizarProducto = () => {
             return;
         }
 
+        // Verificar si la categoría existe
+        const categoriaExistente = categorias.find(cat => cat.categoria.toUpperCase() === form.categoria.toUpperCase());
+        if (!categoriaExistente) {
+            setMensaje({ respuesta: 'Categoría inexistente', tipo: false });
+            return;
+        }
+
         const formData = new FormData();
         formData.append('cliente', userId);
 
-        for (const key in form) {
-            formData.append(key, form[key]);
-        }
+        // Añadir solo los campos que han sido modificados
+        Object.keys(form).forEach(key => {
+            if (form[key] !== null && form[key] !== "") {
+                formData.append(key, form[key]);
+            }
+        });
 
         if (imagen) {
             formData.append('imagen', imagen);
@@ -69,6 +124,10 @@ const ActualizarProducto = () => {
             setMensaje({ respuesta: error.response?.data?.message || 'Hubo un error', tipo: false });
         }
     };
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
 
     return (
         <div>
