@@ -1,4 +1,3 @@
-// src/components/CierreSesion.jsx
 import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -7,8 +6,13 @@ import Mensaje from '../componets/Alertas/Mensaje';
 
 const CierreSesion = () => {
     const { auth, setAuth } = useContext(AuthContext);
-    const navigate = useNavigate();
     const [mensaje, setMensaje] = useState({});
+    const navigate = useNavigate();
+
+    const handleCancelar = () => {
+        navigate(-1); // Esto navega hacia atrás en la pila de historial
+    };
+
 
     const handleLogout = async () => {
         const userId = auth.userId; // Usar el userId del contexto de autenticación
@@ -33,7 +37,7 @@ const CierreSesion = () => {
                 localStorage.removeItem('nombre'); // Eliminar el nombre del almacenamiento local
                 localStorage.removeItem('rol'); // Eliminar el rol del almacenamiento local
                 setMensaje({ respuesta: 'Sesión cerrada con éxito', tipo: true });
-                navigate('/login');
+                navigate('/');
             } else {
                 setMensaje({ respuesta: 'Hubo un problema al cerrar la sesión', tipo: false });
             }
@@ -44,22 +48,23 @@ const CierreSesion = () => {
     };
 
     return (
-        <div className="logout-container">
+        <div className="logout-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
             <h2>¿Estás seguro de que quieres cerrar la sesión?</h2>
-            {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
-            <button 
-                onClick={handleLogout} 
-                className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-800 m-2"
-            >
-                Cerrar Sesión
-            </button>
-            <button 
-                onClick={() => navigate('/dashboard')} 
-                className="bg-gray-600 text-white px-6 py-2 rounded-full hover:bg-gray-800 m-2"
-            >
-                Cancelar
-            </button>
+                {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
+                    <button 
+                        onClick={handleLogout} 
+                    className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-800 m-2"
+                    >
+                        Cerrar Sesión
+                    </button>
+                    <button
+                        onClick={handleCancelar} 
+                    className="bg-gray-600 text-white px-6 py-2 rounded-full hover:bg-gray-800 m-2"
+                    >
+                        Cancelar
+                    </button>
         </div>
+
     );
 };
 

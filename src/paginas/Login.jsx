@@ -44,8 +44,12 @@ const Login = () => {
 
                 // Actualizar el contexto de autenticación
                 setAuth({ nombre, rol, token, userId });
-
+                if (rol === 'admin'){
                 navigate('/dashboard');
+                }else{
+                    navigate('/catalogo')
+                }
+
             } else {
                 setMensaje({ respuesta: respuesta.data.message, tipo: false });
                 setForm({ email: "", password: "" });

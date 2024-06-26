@@ -20,8 +20,8 @@ import Restablecer from './paginas/Restablecer';
 import { AuthProvider } from './context/AuthProvider';
 import PrivateRoute from './routes/PrivateRoute';
 import Productos from './paginas/Productos'
-import { Catalogo } from './paginas/Catalogo';
-import Categoria from './paginas/Categoria';
+import  {Catalogo}  from './paginas/Catalogo';
+import CategoryList from './paginas/CategoriaCliente';
 import ListarCategorias from './paginas/ListarCategoria';
 import EditarCategoria from './paginas/EditarCategoria';
 import CrearCategoria from './paginas/CrearCategoria';
@@ -33,13 +33,16 @@ import BorrarCajero from './paginas/BorrarCajero';
 import { Forbidden } from './paginas/Forbidden';
 import CierreSesion from './paginas/CerrarSesion';
 import SessionTimeout from './paginas/SesionTimeout';
-
+import CarritoDeCompras from './paginas/Carrito';
+import { Favoritos } from './paginas/Favoritos';
+import HistorialPedidos from './paginas/HistorialPedidosCliente';
+import EstadoP from './paginas/HistorialVentasCajero'
+import HistorialVentas from './paginas/HistorialVentasCajero';
+import HistorialVentasCajero from './paginas/HistorialVentasCajero';
 function App() {
-  const TIMEOUT_DURATION = 5 * 60 * 1000; 
   return (
     <BrowserRouter>
       <AuthProvider>
-      <SessionTimeout timeout={TIMEOUT_DURATION}>
         <Routes>
           <Route index element={<LandinPage />} />
           <Route path='/' element={<Auth />}>
@@ -50,7 +53,7 @@ function App() {
             <Route path='login/recuperar-password/:token' element={<Restablecer />} />
             <Route path='*' element={<NotFound />} />
           </Route>
-          
+          {/*Administrador*/}
           <Route path='dashboard/*' element={<PrivateRoute />}>
             <Route element={<Dashboard />}>
               <Route index element={<Productos />} />
@@ -69,15 +72,25 @@ function App() {
               <Route path='historial-pedidos' element={<HistorialPedidosAdmin />} />
               <Route path='historial-ventas' element={<HistorialVentasAdmin />} />
               <Route path="cerrar-sesion" element={<CierreSesion />} />
-
-
-              <Route path='pedidos' element={<Pedido />} />
             </Route>
           </Route>
-
+          {/*Cliente*/}
+              <Route path='catalogo' element={<Catalogo/>}/>
+              <Route path='carrito-compra' element={<CarritoDeCompras/>}/>
+              <Route path='favoritos' element={<Favoritos/>}/>
+              <Route path='categorias' element={<CategoryList />} />   
+              <Route path='historial-pedidos' element={<HistorialPedidos/>}/>
+              <Route path="cerrar-sesion" element={<CierreSesion />} />
+          {/*Cajero*/}
+              <Route path='catalogo' element={<Catalogo/>}/>
+              <Route path='carrito-ventas' element={<CarritoDeCompras/>}/>
+              <Route path='categorias' element={<CategoryList />} />   
+              <Route path='historial-ventas-cajeros' element={<HistorialVentasAdmin/>}/>
+              <Route path='historial-pedidos-cajero' element={<HistorialPedidosAdmin/>}/>
+              <Route path='historial-ventas' element={<HistorialVentasCajero/>}/>
+              <Route path="cerrar-sesion" element={<CierreSesion />} />
           <Route path='/forbidden' element={<Forbidden />} />
         </Routes>
-        </SessionTimeout>
       </AuthProvider>
     </BrowserRouter>
   );

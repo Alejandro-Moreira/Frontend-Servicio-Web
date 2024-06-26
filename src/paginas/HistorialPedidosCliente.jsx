@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft, FaShoppingCart, FaList, FaHeart } from 'react-icons/fa';
 import Mensaje from '../componets/Alertas/Mensaje';
-import Modal from '../componets/Modals/ModalHistorialPedido'; 
+import Modal from '../componets/Modals/ModalHistorialPedido';
+
 
 const HistorialPedidos = () => {
   const { auth } = useContext(AuthContext);
   const [pedidos, setPedidos] = useState([]);
   const [error, setError] = useState(null);
-  const [mensaje, setMensaje] = useState(null);
   const [pedidoDetalles, setPedidoDetalles] = useState(null); // Para el modal
+  const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerHistorialPedidos = async () => {
@@ -21,7 +24,7 @@ const HistorialPedidos = () => {
           return;
         }
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/pedidos/admin/mostrar?cliente=${userId}`;
+        const url = `${import.meta.env.VITE_BACKEND_URL}/pedidos/mostrar?cliente=${userId}`;
         const options = {
           headers: {
             'Content-Type': 'application/json',
@@ -30,9 +33,10 @@ const HistorialPedidos = () => {
         };
 
         const response = await axios.get(url, options);
+
         if (response.status === 200) {
           setPedidos(response.data);
-      
+
         } else {
           setError('Error al obtener el historial de pedidos');
         }
@@ -45,46 +49,12 @@ const HistorialPedidos = () => {
     obtenerHistorialPedidos();
   }, []);
 
-
-
   const handleViewPedidos = async (pedido) => {
+    const userId = localStorage.getItem('userId');
     try {
       const userId = localStorage.getItem('userId');
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/${pedido._id}?cliente=${userId}`);
-      if (pedido.estado === 'En espera') {
-        pedido.estado = 'En preparación'
-        setPedidoDetalles(pedido);
-        setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'En preparación' } : p));
-      }else{
-        setPedidoDetalles(pedido);
-      }
-    } catch (error) {
-      setError('Error al obtener los productos');
-      console.error('Error al obtener los productos', error);
-    }
-  };
-  
-
-  const handleChangeEnviado = async (pedido) => {
-    try {
-      const userId = localStorage.getItem('userId');
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/enviado/${pedido._id}?cliente=${userId}`);
-      if(pedido.estado === 'En preparación'){
-        setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'Enviado' } : p));
-      }
-    } catch (error) {
-      setError('Error al obtener los productos');
-      console.error('Error al obtener los productos', error);
-    }
-  };
-
-  const handleChangePagado = async (pedido) => {
-    try {
-      const userId = localStorage.getItem('userId');
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/pagado/${pedido._id}?cliente=${userId}`);
-      if(pedido.estado === 'Enviado'){
-        setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'Pagado' } : p));
-      }
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/pedidos/buscar/${pedido._id}?cliente=${userId}`);
+      setPedidoDetalles(pedido);
     } catch (error) {
       setError('Error al obtener los productos');
       console.error('Error al obtener los productos', error);
@@ -94,13 +64,35 @@ const HistorialPedidos = () => {
   const cerrarModal = () => {
     setPedidoDetalles(null);
   };
+  const canShowError = !!pedidos && pedidos?.length === 0;
 
+  useEffect(() => {
+    setError(!!pedidos)
+  }, [pedidos, error])
+
+
+  console.log(!!pedidos, (!canShowError) && !error, "a");
   return (
-    <div className="historial-container">
-      <h2 className="font-black text-4xl text-gray-500 mb-5">Historial de Pedidos</h2>
-      {error && <Mensaje tipo="error">{error}</Mensaje>}
-      {mensaje && <Mensaje tipo="exito">{mensaje}</Mensaje>}
-      {pedidos.length === 0 && !error ? (
+      <main className='bg-white px-10 md:px-20 lg:px-40'>
+      <section className='flex items-center justify-between'>
+        <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Historial de Pedidos</h2>
+        <div className='flex space-x-4'>
+          <button onClick={() => navigate('/catalogo')} className="text-teal-600">
+            <FaArrowLeft size={30} />
+          </button>
+          <button onClick={() => navigate('/carrito-compra')} className="text-teal-600">
+            <FaShoppingCart size={30} />
+          </button>
+          <button onClick={() => navigate('/categorias')} className="text-teal-600">
+            <FaList size={30} />
+          </button>
+          <button onClick={() => navigate('/favoritos')} className="text-teal-600">
+            <FaHeart size={30} />
+          </button>
+        </div>
+      </section>
+      {error && <Mensaje tipo="exito">Pedidos encontrados</Mensaje>}
+      {(!canShowError) && !error ? (
         <Mensaje tipo="informacion">No hay pedidos en el historial.</Mensaje>
       ) : (
         <table className='w-full mt-5 table-auto shadow-lg bg-white'>
@@ -108,9 +100,9 @@ const HistorialPedidos = () => {
             <tr>
               <th className='p-2'>N°</th>
               <th className='p-2'>Cliente</th>
+              <th className='p-2'>Dirección</th>
               <th className='p-2'>Total</th>
               <th className='p-2'>Fecha</th>
-              <th className='p-2'>Dirección</th>
               <th className='p-2'>Estado</th>
               <th className='p-2'>Acciones</th>
             </tr>
@@ -120,35 +112,17 @@ const HistorialPedidos = () => {
               <tr key={pedido._id} className="border-b hover:bg-gray-300 text-center">
                 <td className='p-2'>{index + 1}</td>
                 <td className='p-2'>{pedido.nombre}</td>
+                <td className='p-2'>{pedido.direccion}</td>
                 <td className='p-2'>${pedido.total}</td>
                 <td className='p-2'>{new Date(pedido.fecha).toLocaleDateString()}</td>
-                <td className='p-2'>{pedido.direccion}</td>
                 <td className='p-2'>{pedido.estado}</td>
                 <td className='p-2'>
-                {pedido.estado === pedido.estado  ? (
                   <button
                     className="bg-gray-500 text-white px-3 py-1 rounded mr-2"
                     onClick={() => handleViewPedidos(pedido)}
                   >
                     Ver
                   </button>
-                ): null}
-                  {pedido.estado === 'En preparación' ? (
-                    <button
-                      className="bg-green-500 text-white px-3 py-1 rounded"
-                      onClick={() => handleChangeEnviado(pedido)}
-                    >
-                      Cambiar Estado
-                    </button>
-                  ) : null}
-                  {pedido.estado === 'Enviado' ? (
-                    <button
-                      className="bg-green-500 text-white px-3 py-1 rounded"
-                      onClick={() => handleChangePagado(pedido)}
-                    >
-                      Cambiar Estado
-                    </button>
-                  ) : null}
                 </td>
               </tr>
             ))}
@@ -178,7 +152,7 @@ const HistorialPedidos = () => {
           </ul>
         </Modal>
       )}
-    </div>
+    </main>
   );
 };
 
