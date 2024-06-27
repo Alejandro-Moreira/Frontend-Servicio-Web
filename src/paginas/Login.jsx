@@ -27,15 +27,17 @@ const Login = () => {
 
         try {
             const respuesta = await axios.post(url, form);
-
             if (respuesta.status === 200) {
+                let rol = ''
                 const { message, userId } = respuesta.data;
                 console.log('User ID from backend:', userId); 
-
-                const token = 'dummy-token';
-                const rol = form.email === 'mikayvale2024@outlook.com' ? 'admin' : 'cliente'; 
+                if (message === 'Cajero Autenticado Correctamente'){
+                    rol = 'cajero'
+                } else {
+                    rol = form.email === 'mikayvale2024@outlook.com' ? 'admin' : 'cliente'; 
+                }
                 const nombre = form.email.split('@')[0];
-
+                const token = 'dummy-token';
                 // Almacenar en localStorage
                 localStorage.setItem('token', token);
                 localStorage.setItem('rol', rol);
@@ -46,8 +48,10 @@ const Login = () => {
                 setAuth({ nombre, rol, token, userId });
                 if (rol === 'admin'){
                 navigate('/dashboard');
-                }else{
+                }else if(rol === 'cliente'){
                     navigate('/catalogo')
+                }else{
+                    navigate('/catalogo-cajero')
                 }
 
             } else {

@@ -54,6 +54,9 @@ const EliminarProducto = () => {
                 setProductos(productos.filter(producto => producto._id !== productoAEliminar._id));
                 setMensaje({ respuesta: 'Producto eliminado con éxito', tipo: true });
                 setProductoAEliminar(null);
+                setTimeout(() => {
+                    navigate('/dashboard/listar-producto');
+                }, 3000);
             } else {
                 setMensaje({ respuesta: respuesta.data.message, tipo: false });
             }

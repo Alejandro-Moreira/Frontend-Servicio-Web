@@ -14,7 +14,6 @@ const ActualizarCajero = () => {
     password: ''
   });
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const cargarCajero = async () => {
       setLoading(true);
@@ -99,7 +98,7 @@ const ActualizarCajero = () => {
           username: cajeroActualizado.username || '',
           password: '' // No queremos prellenar la contraseña
         });
-
+        
         setTimeout(() => {
           navigate('/dashboard/cajero-listar');
         }, 3000);

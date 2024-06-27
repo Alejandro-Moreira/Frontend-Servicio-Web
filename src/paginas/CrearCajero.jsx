@@ -46,10 +46,16 @@ const CrearCajero = () => {
       const respuesta = await axios.post(url, formData, options);
 
       if (respuesta.status === 200) {
-        setMensaje({ respuesta: 'Cajero registrado con éxito', tipo: true });
-        setTimeout(() => {
-          navigate('/dashboard/cajero-listar');
-        }, 3000);
+        if(respuesta.data.msg == 'Lo sentimos, ese email ya se encuentra registrado en los clientes'){
+          setMensaje({ respuesta: 'Ese correo ya se encuentra registrado', tipo: false });
+        }else if(respuesta.data.msg == 'Lo sentimos, el telefono celular ya se encuentra registrado en los clientes'){
+          setMensaje({ respuesta: 'Ese telefono ya se encuentra registrado', tipo: false });
+        }else{
+          setMensaje({ respuesta: 'Cajero registrado con éxito', tipo: true });
+          setTimeout(() => {
+            navigate('/dashboard/cajero-listar');
+          }, 3000);
+        }
       } else {
         setMensaje({ respuesta: respuesta.data.message, tipo: false });
       }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaArrowLeft, FaShoppingCart, FaHeart, FaHistory} from 'react-icons/fa';
+import { FaShoppingCart, FaHeart, FaHistory} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import Mensaje from '../componets/Alertas/Mensaje';
@@ -55,21 +55,45 @@ const CategoryList = () => {
     setProductError(null); 
   };
 
+  const favoritosLogin = () => {
+    const userId = localStorage.getItem('userId')
+    if(userId == ''){
+      navigate('/login')
+    }else{
+      nagivage('/favoritos')
+    }
+  }
+
+  const CarritosLogin = () => {
+    const userId = localStorage.getItem('userId')
+    if(userId == ''){
+      navigate('/login')
+    }else{
+      nagivage('/carrito-compra')
+    }
+  }
+
+  const HistorialLogin = () => {
+    const userId = localStorage.getItem('userId')
+    if(userId == ''){
+      navigate('/login')
+    }else{
+      nagivage('/historial-ventas')
+    }
+  }
+
   return (
     <div className="category-container">
       <div className="flex items-center mb-5">
         <h2 className="font-black text-4xl text-teal-600 mr-4">Categorías</h2>
         <div className="flex space-x-4">
-          <button onClick={() => navigate('/catalogo')} className="text-teal-600">
-            <FaArrowLeft size={30} />
-          </button>
-          <button onClick={() => navigate('/carrito-compra')} className="text-teal-600">
+          <button onClick={() => CarritosLogin()} className="text-teal-600">
             <FaShoppingCart size={30} />
           </button>
-          <button onClick={() => navigate('/favoritos')} className="text-teal-600">
+          <button onClick={() => favoritosLogin()} className="text-teal-600">
             <FaHeart size={30} />
           </button>
-          <button onClick={() => navigate('/historial-ventas')} className="text-teal-600">
+          <button onClick={() => HistorialLogin()} className="text-teal-600">
             <FaHistory size={30} />
           </button>
         </div>

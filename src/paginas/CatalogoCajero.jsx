@@ -2,24 +2,24 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
-import { FaShoppingCart, FaHeart, FaSignOutAlt, FaHistory, FaBars, FaTimes } from 'react-icons/fa';
+import { FaShoppingCart, FaSignOutAlt, FaHistory, FaBars, FaTimes, FaCalendarCheck, FaFileInvoice} from 'react-icons/fa';
 import Modal from 'react-modal'; 
 import ModalCarrito from '../componets/Modals/ModalCarrito';
 import { SearchInput } from './Barrabusqueda';
 import { getProductosListar } from "./../services/getProductosListar";
 import CategoryList from './CategoriaCliente';
 import Mensaje from '../componets/Alertas/Mensaje';
-
 Modal.setAppElement('#root'); 
 
-export const Catalogo = () => {
+
+export const CatalogoCajero = () => {
     const [productos, setProductos] = useState([]);
     const [cartItems, setCartItems] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [cantidad, setCantidad] = useState(1);
     const [producto, setProducto] = useState(null);
     const [mensajeConfirmacion, setMensajeConfirmacion] = useState('');
-    const [tipoMensaje, setTipoMensaje] = useState(null); 
+    const [tipoMensaje, setTipoMensaje] = useState(null); // Añadido para manejar el tipo de mensaje
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [productModalIsOpen, setProductModalIsOpen] = useState(false);
@@ -36,7 +36,7 @@ export const Catalogo = () => {
                 console.error('Error al obtener productos:', error);
             });
     }, []);
-    
+
     useEffect(() => {
         const storedCartItems = localStorage.getItem('cartItems');
         if (storedCartItems) {
@@ -59,16 +59,13 @@ export const Catalogo = () => {
 
     const addToCart = async () => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/pedidos/agregar`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ventas/agregar`, {
                 cliente: auth.userId,
                 producto: producto._id,
                 cantidad: cantidad
             });
 
-            const updatedCartItems = cartItems.some(item => item._id === producto._id) 
-                ? cartItems.map(item => item._id === producto._id ? { ...item, cantidad: item.cantidad + cantidad } : item)
-                : [...cartItems, { ...producto, cantidad }];
-
+            let updatedCartItems = [...cartItems, { ...producto, cantidad }];
             setCartItems(updatedCartItems);
             localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
             setMensajeConfirmacion('Producto añadido con éxito');
@@ -94,7 +91,7 @@ export const Catalogo = () => {
 
     const updateCart = async () => {
         try {
-            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/pedidos/actualizar/${producto._id}`, {
+            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/ventas/actualizar/${producto._id}`, {
                 cliente: auth.userId,
                 cantidad: cantidad
             });
@@ -122,29 +119,6 @@ export const Catalogo = () => {
             if (error.response?.data?.disponible) {
                 setCantidad(error.response.data.disponible);
             }
-        }
-    };
-
-    const addToFavorites = async (producto) => {
-        try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/favoritos/registro`, {
-                cliente: auth.userId,
-                producto: producto._id
-            });
-            setMensajeConfirmacion('Producto añadido a favoritos con éxito');
-            setTipoMensaje(true); // Mensaje de éxito
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000); 
-        } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Error al añadir a favoritos';
-            setMensajeConfirmacion(errorMessage);
-            setTipoMensaje(false); // Mensaje de error
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000);
         }
     };
     
@@ -200,14 +174,17 @@ export const Catalogo = () => {
                         <button onClick={toggleMenu} className="text-teal-600">
                             {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
                         </button>
-                        <Link to="/carrito-compra" className="text-teal-600">
+                        <Link to="/carrito-ventas" className="text-teal-600">
                             <FaShoppingCart size={30} />
                         </Link>
-                        <Link to="/favoritos" className="text-teal-600">
-                            <FaHeart size={30} />
-                        </Link>
-                        <Link to="/historial-pedidos" className="text-teal-600"> 
+                        <Link to="/historial-ventas" className="text-teal-600"> 
                             <FaHistory size={30} /> 
+                        </Link>
+                        <Link to="/historial-ventas-cajeros" className="text-teal-600"> 
+                            <FaFileInvoice size={30} /> 
+                        </Link>
+                        <Link to="/historial-pedidos-cajeros" className="text-teal-600"> 
+                            <FaCalendarCheck size={30} /> 
                         </Link>
                         <button onClick={() => navigate('/cerrar-sesion')} className="text-teal-600">
                             <FaSignOutAlt size={30} />
@@ -240,16 +217,13 @@ export const Catalogo = () => {
                                 <p className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</p>
                                 {isInCart(producto._id) ? (
                                     <>
-                                        <button onClick={() => handleUpdateCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
+                                        <button onClick={() => handleAddToCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
                                     </>
                                 ) : (
                                     <>
-                                        <button onClick={() => handleAddToCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
+                                        <button onClick={() => handleUpdateCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
                                     </>
                                 )}
-                                <button onClick={() => addToFavorites(producto)} className="bg-red-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-red-800">
-                                    <FaHeart size={20} /> 
-                                </button>
                             </div>
                         </div>
                     ))}
@@ -258,7 +232,7 @@ export const Catalogo = () => {
 
             {modalIsOpen && (
                 <ModalCarrito onClose={() => setModalIsOpen(false)}>
-                    <h2>{isInCart(producto?._id) ? 'Actualizar Producto del Carrito' : 'Agregar Producto al Carrito'}</h2>
+                    <h2>{isInCart(producto?._id) ?  'Agregar Producto al Carrito' : 'Actualizar Producto del Carrito'}</h2>
                     <p>{producto && producto.nombre}</p>
                     <input 
                         type="number" 
@@ -270,12 +244,12 @@ export const Catalogo = () => {
                         className="border p-2 rounded"
                     />
                     {isInCart(producto?._id) ? (
-                        <button onClick={updateCart} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
-                            Actualizar
-                        </button>
-                    ) : (
                         <button onClick={addToCart} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
                             Agregar
+                        </button>
+                    ) : (
+                        <button onClick= {updateCart} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
+                            Actualizar
                         </button>
                     )}
                 </ModalCarrito>

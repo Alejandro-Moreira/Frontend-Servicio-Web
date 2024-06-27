@@ -17,7 +17,6 @@ const ActualizarProducto = () => {
     const [imagen, setImagen] = useState(null);
     const [loading, setLoading] = useState(true);
     const [categorias, setCategorias] = useState([]);
-
     useEffect(() => {
         // Cargar datos del producto
         const cargarProducto = async () => {
@@ -112,10 +111,21 @@ const ActualizarProducto = () => {
             const respuesta = await axios.put(url, formData, options);
 
             if (respuesta.status === 200) {
-                setMensaje({ respuesta: 'Producto actualizado con éxito', tipo: true });
-                setTimeout(() => {
-                    navigate('/dashboard/listar-producto');
-                }, 3000);
+                if(respuesta.data.message == 'El precio debe de ser mayor a 0'){
+                    setMensaje({ respuesta: 'El precio debe de ser mayor a 0', tipo: false });
+                }else if(respuesta.data.message == 'La cantidad debe de ser mayor a 0'){
+                    setMensaje({ respuesta: 'La cantidad debe de ser mayor a 0', tipo: false });
+                }else if(respuesta.data.message == 'No existe esa categoria'){
+                    setMensaje({ respuesta: 'No existe esa categoria', tipo: false });
+                }else if(respuesta.data.message == 'Ya existe un producto con ese nombre.'){
+                    setMensaje({ respuesta: 'Ya existe un producto con ese nombre', tipo: false });
+                }else{
+                    setMensaje({ respuesta: 'Producto actualizado con éxito', tipo: true });
+                    setTimeout(() => {
+                        navigate('/dashboard/listar-producto');
+                    }, 3000);
+                    
+                }
             } else {
                 setMensaje({ respuesta: respuesta.data.message, tipo: false });
             }

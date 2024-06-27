@@ -16,9 +16,9 @@ const BorrarCajero = () => {
       setMensaje({ respuesta: 'No estás autenticado', tipo: false });
       return;
     }
-
+    
     try {
-      const url = `${backendUrl}/cajeros/eliminar`;
+      const url = `${backendUrl}/cajeros/eliminar/${cajero._id}?cliente=${userId}`;
       const response = await axios.delete(url, {
         data: { email, cliente: userId },
       });

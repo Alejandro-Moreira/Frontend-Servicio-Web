@@ -20,7 +20,7 @@ export const Forgot = () => {
         e.preventDefault()
 
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/login/recuperar-password`
+            const url = `${import.meta.env.VITE_BACKEND_URL}/login/recuperar-password/:token`
             const respuesta = await axios.post(url, mail)
             setMensaje({ respuesta: respuesta.data.msg, tipo: true })
             setMail("")

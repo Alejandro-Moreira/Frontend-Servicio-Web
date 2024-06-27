@@ -98,7 +98,7 @@ export const Favoritos = () => {
             <section className='flex items-center justify-between'>
                 <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Favoritos</h2>
                 <div className='flex space-x-4'>
-                    <button onClick={() => navigate('/catalogo')} className="text-teal-600">
+                    <button onClick={() => navigate(-1)} className="text-teal-600">
                         <FaArrowLeft size={30} />
                     </button>
                     <button onClick={() => navigate('/carrito-compra')} className="text-teal-600">

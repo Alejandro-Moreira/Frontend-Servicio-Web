@@ -6,7 +6,6 @@ import { LandinPage } from './paginas/LandinPage';
 import { Register } from './paginas/Register';
 import { Forgot } from './paginas/Forgot';
 import { NotFound } from './paginas/NotFound';
-import Pedido from './paginas/Pedidos'; 
 import HistorialPedidosAdmin from './paginas/HistorialPedidosAdmin'; 
 import HistorialVentasAdmin from './paginas/HistorialVentasAdmin';
 import Dashboard from './layout/Dashboard';
@@ -14,7 +13,6 @@ import Listar from './paginas/Listar';
 import Crear from './paginas/Crear';
 import ActualizarProducto from './paginas/Actualizar';
 import Eliminar from './paginas/Eliminar';
-import Perfil from './paginas/Perfil';
 import { Confirmar } from './paginas/Confirmar';
 import Restablecer from './paginas/Restablecer';
 import { AuthProvider } from './context/AuthProvider';
@@ -32,13 +30,14 @@ import CrearCajero from './paginas/CrearCajero';
 import BorrarCajero from './paginas/BorrarCajero';
 import { Forbidden } from './paginas/Forbidden';
 import CierreSesion from './paginas/CerrarSesion';
-import SessionTimeout from './paginas/SesionTimeout';
 import CarritoDeCompras from './paginas/Carrito';
 import { Favoritos } from './paginas/Favoritos';
 import HistorialPedidos from './paginas/HistorialPedidosCliente';
-import EstadoP from './paginas/HistorialVentasCajero'
-import HistorialVentas from './paginas/HistorialVentasCajero';
+import VerPedido from './paginas/VerPedido';
 import HistorialVentasCajero from './paginas/HistorialVentasCajero';
+import { CatalogoCajero } from './paginas/CatalogoCajero';
+import CarritoDeVentas from './paginas/CarritoVentas'
+
 function App() {
   return (
     <BrowserRouter>
@@ -81,13 +80,14 @@ function App() {
               <Route path='categorias' element={<CategoryList />} />   
               <Route path='historial-pedidos' element={<HistorialPedidos/>}/>
               <Route path="cerrar-sesion" element={<CierreSesion />} />
+              <Route path="/pedidos/:id" element={<VerPedido />} />
           {/*Cajero*/}
-              <Route path='catalogo' element={<Catalogo/>}/>
-              <Route path='carrito-ventas' element={<CarritoDeCompras/>}/>
+              <Route path='catalogo-cajero' element={<CatalogoCajero/>}/>
+              <Route path='carrito-ventas' element={<CarritoDeVentas/>}/>
               <Route path='categorias' element={<CategoryList />} />   
-              <Route path='historial-ventas-cajeros' element={<HistorialVentasAdmin/>}/>
-              <Route path='historial-pedidos-cajero' element={<HistorialPedidosAdmin/>}/>
               <Route path='historial-ventas' element={<HistorialVentasCajero/>}/>
+              <Route path='historial-ventas-cajeros' element={<HistorialVentasAdmin/>}/>
+              <Route path='historial-pedidos-cajeros' element={<HistorialPedidosAdmin/>}/>
               <Route path="cerrar-sesion" element={<CierreSesion />} />
           <Route path='/forbidden' element={<Forbidden />} />
         </Routes>

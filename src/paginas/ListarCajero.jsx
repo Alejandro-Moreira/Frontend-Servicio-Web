@@ -47,7 +47,7 @@ const MostrarCajeros = () => {
       const confirmar = confirm("¿Estás seguro de que deseas eliminar este cajero?");
       if (confirmar) {
         const userId = localStorage.getItem('userId');
-        const url = `${backendUrl}/cajeros/borrar/${id}`;
+        const url = `${backendUrl}/cajeros/eliminar/${id}`;
         await axios.delete(url, {
           data: { cliente: userId }
         });

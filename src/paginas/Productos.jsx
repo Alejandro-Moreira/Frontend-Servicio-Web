@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../context/AuthProvider'; // Asegúrate de que la ruta sea correcta
+import AuthContext from '../context/AuthProvider';
 
 export const Productos = () => {
     const [productos, setProductos] = useState([]);
-    const { auth } = useContext(AuthContext); // Usar el contexto de autenticación
+    const { auth } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch products from the backend
         axios.get(`${import.meta.env.VITE_BACKEND_URL}/productos/listar`)
             .then(response => {
                 setProductos(response.data);
             })
             .catch(error => {
-                console.error('Error fetching products:', error);
+                console.error('Error al obtener productos:', error);
             });
     }, []);
 

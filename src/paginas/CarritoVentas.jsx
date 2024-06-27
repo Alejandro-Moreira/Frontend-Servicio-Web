@@ -5,13 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FaArrowLeft, FaTrash } from 'react-icons/fa';
 
-const CarritoDeCompras = () => {
+const CarritoDeVentas = () => {
     const [cartItems, setCartItems] = useState([]);
-    const [pedidoId, setPedidoId] = useState(null);
+    const [ventasId, setVentasId] = useState(null);
     const [mensaje, setMensaje] = useState('');
     const [tipoMensaje, setTipoMensaje] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [entrega, setEntrega] = useState('local'); 
     const [mostrarFactura, setMostrarFactura] = useState(false);
     const [factura, setFactura] = useState(null);
     const userId = localStorage.getItem('userId');
@@ -21,29 +20,34 @@ const CarritoDeCompras = () => {
 
     useEffect(() => {
         if (userId) {
-            listarProductosPedido();
+            listarProductosVentas();
         }
     }, [userId]);
 
-    const listarProductosPedido = async () => {
+    const listarProductosVentas = async () => {
         try {
-            const response = await axios.get(`${baseUrl}/pedidos/listar?cliente=${userId}`);
-            const pedido = response.data.Pedido;
-            const pedidoId = Object.keys(pedido)[0];
-            const productos = pedido[pedidoId];
-            setPedidoId(pedidoId);
-            setCartItems(productos.filter(item => item.Producto));
+            const response = await axios.get(`${baseUrl}/ventas/listar?cliente=${userId}`);
+            if (response && response.data) {
+                const ventas = response.data.Venta;
+                const ventasId = Object.keys(ventas)[0];
+                const productos = ventas[ventasId];
+                setVentasId(ventasId);
+                setCartItems(productos.filter(item => item.Producto));
+            } else {
+                setMensaje('No se pudo obtener la información de ventas.');
+                setTipoMensaje(false);
+            }
         } catch (error) {
-            setMensaje(error.response?.data?.message || 'Error al listar los productos del pedido');
+            setMensaje(error.response?.data?.message || 'Error al listar los productos de la venta');
             setTipoMensaje(false);
         }
     };
 
-    const borrarProductoPedido = async (producto) => {
+    const borrarProductoVentas = async (producto) => {
         try {
             const response = await axios({
                 method: 'delete',
-                url: `${baseUrl}/pedidos/borrar/${producto.idProducto}`,
+                url: `${baseUrl}/ventas/borrar/${producto.idProducto}`,
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -51,19 +55,19 @@ const CarritoDeCompras = () => {
             });
             setMensaje(response.data.message);
             setTipoMensaje(true);
-            listarProductosPedido();
+            listarProductosVentas();
         } catch (error) {
-            setMensaje(error.response?.data?.message || 'Error al borrar el producto del pedido');
+            setMensaje(error.response?.data?.message || 'Error al borrar el producto de la venta');
             setTipoMensaje(false);
             console.error(error.response ? error.response.data : error.message);
         }
     };
 
-    const borrarTodoPedido = async () => {
+    const borrarTodoVenta = async () => {
         try {
             const response = await axios({
                 method: 'delete',
-                url: `${baseUrl}/pedidos/eliminar`,
+                url: `${baseUrl}/ventas/eliminar`,
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -71,9 +75,9 @@ const CarritoDeCompras = () => {
             });
             setMensaje(response.data.message);
             setTipoMensaje(true);
-            listarProductosPedido();
+            listarProductosVentas();
         } catch (error) {
-            setMensaje(error.response?.data?.message || 'Error al borrar el pedido');
+            setMensaje(error.response?.data?.message || 'Error al borrar la venta');
             setTipoMensaje(false);
             console.error(error.response ? error.response.data : error.message);
         }
@@ -91,37 +95,40 @@ const CarritoDeCompras = () => {
         abrirModal();
     };
 
-    const procesarPedido = async () => {
+    const procesarVenta = async () => {
         try {
-            const response = await axios.post(`${baseUrl}/pedidos/registro`, {
-                cliente: userId,
-                comision: entrega === 'casa'
+            const response = await axios.post(`${baseUrl}/ventas/registro`, {
+                cliente: userId
             });
 
             setMensaje(response.data.message);
             setTipoMensaje(true);
 
-            if (response.data.Pedido && response.data.Pedido.length > 0) {
-                const pedidoData = response.data.Pedido[0];
+            if (response.data.Venta) {
+                const ventaId = Object.keys(response.data.Venta)[0];
+                const ventaData = response.data.Venta[ventaId];
+                const productos = ventaData[0].Producto.map((producto, index) => ({
+                    Producto: producto,
+                    Cantidad: ventaData[0].Cantidad[index],
+                    Precio: ventaData[0].Precio[index]
+                }));
+                const total = ventaData[1].Total;
                 const factura = {
-                    fecha: new Date().toLocaleDateString(),
-                    items: cartItems,
-                    total: pedidoData.Total,
-                    entrega,
-                    nombreCliente: pedidoData.NombreCliente,
-                    direccion: entrega === 'casa' ? 'Dirección de entrega' : 'Retiro en local'
+                    fecha: new Date(ventaData[1].Fecha).toLocaleDateString(),
+                    items: productos,
+                    total: total,
                 };
 
                 setFactura(factura);
                 setMostrarFactura(true);
             } else {
-                setMensaje(response.data.message);
+                setMensaje('No se pudo obtener la información del pedido.');
                 setTipoMensaje(false);
             }
 
             cerrarModal();
         } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Error al finalizar el pedido';
+            const errorMessage = error.response?.data?.message || 'Error al finalizar la venta';
             setMensaje(errorMessage);
             setTipoMensaje(false);
             console.error(error.response ? error.response.data : error.message);
@@ -135,13 +142,13 @@ const CarritoDeCompras = () => {
                 <button onClick={() => navigate(-1)} className="text-teal-600">
                     <FaArrowLeft size={30} />
                 </button>
-                <button onClick={borrarTodoPedido} style={{ ...styles.button, ...styles.deleteButton }}>
-                    <FaTrash size={20} /> Eliminar Pedido
+                <button onClick={borrarTodoVenta} style={{ ...styles.button, ...styles.deleteButton }}>
+                    <FaTrash size={20} /> Eliminar Venta
                 </button>
             </div>
             <div>
                 {mensaje && <Mensaje tipo={tipoMensaje}>{mensaje}</Mensaje>}
-                {cartItems.length > 0 ? (
+                {cartItems.length > 0 && !mostrarFactura ? (
                     <div>
                         <div style={styles.tableHeader}>
                             <span style={styles.columnHeader}>Producto</span>
@@ -154,13 +161,13 @@ const CarritoDeCompras = () => {
                             {cartItems.map((producto, index) => (
                                 <li key={index} style={styles.item}>
                                     <span style={styles.column}>{producto.Producto}</span>
-                                    <span style={styles.column}><img src={producto.imagen} alt="Imagen del Producto" className="w-20 h-20 object-cover"/></span>
+                                    <span style={styles.column}><img src={producto.imagen} alt="Imagen del Producto" className="w-20 h-20 object-cover" /></span>
                                     <span style={styles.column}>{producto.Cantidad}</span>
                                     <span style={styles.column}>{producto.Precio}</span>
                                     <div style={styles.buttons}>
                                         <button
                                             style={{ ...styles.button, ...styles.deleteButton }}
-                                            onClick={() => borrarProductoPedido(producto)}>
+                                            onClick={() => borrarProductoVentas(producto)}>
                                             Borrar
                                         </button>
                                     </div>
@@ -170,87 +177,66 @@ const CarritoDeCompras = () => {
                         <button
                             style={{ ...styles.button, ...styles.payButton }}
                             onClick={finalizarPedido}>
-                            Finalizar Compra
+                            Finalizar Venta
                         </button>
                     </div>
                 ) : (
                     <p style={styles.noItems}>No hay productos en el carrito.</p>
                 )}
+
+                {mostrarFactura && factura && (
+                    <div className="factura" style={styles.factura}>
+                        <h1>Gracias por realizar la compra en el minimarket "Mika y Vale"</h1>
+                        <p>Fecha del pedido: {factura.fecha}</p>
+                        <p>Nombre del cliente: {factura.nombreCliente}</p>
+                        <table style={styles.facturaTable}>
+                            <thead>
+                                <tr>
+                                    <th style={styles.facturaTableTh}>Producto</th>
+                                    <th style={styles.facturaTableTh}>Cantidad</th>
+                                    <th style={styles.facturaTableTh}>Precio</th>
+                                    <th style={styles.facturaTableTh}>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {factura.items.map((item, index) => (
+                                    <tr key={index}>
+                                        <td style={styles.facturaTableTd}>{item.Producto}</td>
+                                        <td style={styles.facturaTableTd}>{item.Cantidad}</td>
+                                        <td style={styles.facturaTableTd}>${item.Precio.toFixed(2)}</td>
+                                        <td style={styles.facturaTableTd}>${(item.Precio * item.Cantidad).toFixed(2)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colSpan="3" style={styles.facturaTableTd}>Subtotal</td>
+                                    <td style={styles.facturaTableTd}>${factura.total.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td colSpan="3" style={styles.facturaTableTd}><strong>Total</strong></td>
+                                    <td style={styles.facturaTableTd}><strong>${factura.total.toFixed(2)}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                )}
+
             </div>
 
             {modalIsOpen && (
                 <Modal
                     isOpen={modalIsOpen}
                     onRequestClose={cerrarModal}
-                    contentLabel="Seleccionar Entrega"
+                    contentLabel="Finalizar Pedido"
                     style={modalStyles}
                 >
                     <div className="modal-header" style={styles.modalHeader}><strong>Finalizar Pedido</strong></div>
-                    <div className="modal-body" style={styles.modalBody}>
-                        <p>Seleccione la opción de entrega:</p>
-                        <div className="modal-radio-group" style={styles.radioGroup}>
-                            <label className="modal-radio-label" style={styles.radioLabel}>
-                                <input
-                                    type="radio"
-                                    name="entrega"
-                                    value="local"
-                                    checked={entrega === 'local'}
-                                    onChange={() => setEntrega('local')}
-                                />
-                                <span>Retirar en el local</span>
-                            </label>
-                            <label className="modal-radio-label" style={styles.radioLabel}>
-                                <input
-                                    type="radio"
-                                    name="entrega"
-                                    value="casa"
-                                    checked={entrega === 'casa'}
-                                    onChange={() => setEntrega('casa')}
-                                />
-                                <span>Entregar en casa</span>
-                            </label>
-                        </div>
-                    </div>
                     <div className="modal-footer" style={styles.modalFooter}>
-                        <button onClick={procesarPedido} className="modal-confirm-button" style={styles.confirmButton}>Confirmar</button>
-                        <button onClick={cerrarModal} className="modal-cancel-button" style={styles.cancelButton}>Cancelar</button>
+                        <button onClick={procesarVenta} style={styles.confirmButton}>Confirmar</button>
+                        <button onClick={cerrarModal} style={styles.cancelButton}>Cancelar</button>
                     </div>
                 </Modal>
-            )}
-
-            {mostrarFactura && factura && (
-                <div className="factura">
-                    <h1>Gracias por realizar la compra en el minimarket "Mika y Vale"</h1>
-                    <p>Fecha del pedido: {factura.fecha}</p>
-                    <p>Nombre del cliente: {factura.nombreCliente}</p>
-                    <p>Dirección: {factura.direccion}</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Precio</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {factura.items.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.Producto}</td>
-                                    <td>{item.Cantidad}</td>
-                                    <td>${item.Precio.toFixed(2)}</td>
-                                    <td>${(item.Precio * item.Cantidad).toFixed(2)}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colSpan="3">Subtotal</td>
-                                <td>${factura.total.toFixed(2)}</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
             )}
         </div>
     );
@@ -370,20 +356,6 @@ const styles = {
     modalHeader: {
         fontWeight: 'bold',
     },
-    modalBody: {
-        marginTop: '10px',
-        marginBottom: '10px',
-    },
-    radioGroup: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-    },
-    radioLabel: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-    },
     modalFooter: {
         display: 'flex',
         justifyContent: 'center',
@@ -409,4 +381,4 @@ const modalStyles = {
     },
 };
 
-export default CarritoDeCompras;
+export default CarritoDeVentas;

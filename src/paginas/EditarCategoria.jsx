@@ -37,10 +37,14 @@ const EditarCategoria = () => {
       const respuesta = await axios.put(url, formData, options);
 
       if (respuesta.status === 200) {
-        setMensaje({ respuesta: 'Categoría actualizada con éxito', tipo: true });
-        setTimeout(() => {
-          navigate('/dashboard/categoria-listar');
-        }, 3000);
+        if(respuesta.data.message == 'Ya existe una categoría con ese nombre.'){
+          setMensaje({ respuesta: 'Ya existe una categoría con ese nombre', tipo: false });
+        }else{
+          setMensaje({ respuesta: 'Categoría actualizada con éxito', tipo: true });
+          setTimeout(() => {
+            navigate('/dashboard/categoria-listar');
+          }, 3000);
+        }
       } else {
         setMensaje({ respuesta: respuesta.data.message, tipo: false });
       }

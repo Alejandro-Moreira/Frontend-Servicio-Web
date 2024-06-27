@@ -36,8 +36,10 @@ const CierreSesion = () => {
                 localStorage.removeItem('userId'); // Eliminar el userId del almacenamiento local
                 localStorage.removeItem('nombre'); // Eliminar el nombre del almacenamiento local
                 localStorage.removeItem('rol'); // Eliminar el rol del almacenamiento local
+                localStorage.removeItem('cartItems');//Eliminar el carrito del almacenamiento local
                 setMensaje({ respuesta: 'Sesión cerrada con éxito', tipo: true });
                 navigate('/');
+
             } else {
                 setMensaje({ respuesta: 'Hubo un problema al cerrar la sesión', tipo: false });
             }

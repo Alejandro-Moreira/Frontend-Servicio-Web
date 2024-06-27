@@ -36,16 +36,20 @@ const CrearCategoria = () => {
             const respuesta = await axios.post(url, formData, options);
 
             if (respuesta.status === 200) {
-                setMensaje({ respuesta: 'Categoría registrada con éxito', tipo: true });
-                setTimeout(() => {
-                    navigate('/dashboard/categoria-listar');
-                }, 3000);
+                if(respuesta.data.message == 'Ya existe esa categoria'){
+                    setMensaje({ respuesta: 'Ya existe esa categoria', tipo: false });
+                }else{
+                    setMensaje({ respuesta: 'Categoría registrada con éxito', tipo: true });
+                    setTimeout(() => {
+                        navigate('/dashboard/categoria-listar');
+                    }, 3000);
+                }
             } else {
                 setMensaje({ respuesta: respuesta.data.message, tipo: false });
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            setMensaje({ respuesta: error.response?.data?.message || 'Hubo un error', tipo: false });
+            setMensaje({ respuesta: error.response?.data?.message });
             setTimeout(() => setMensaje({}), 3000);
         }
     };
