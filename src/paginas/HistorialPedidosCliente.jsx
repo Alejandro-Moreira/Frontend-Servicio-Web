@@ -2,16 +2,20 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaShoppingCart, FaList, FaHeart } from 'react-icons/fa';
+import { FaArrowLeft, FaShoppingCart, FaList, FaHeart, FaBars, FaTimes } from 'react-icons/fa';
 import Mensaje from '../componets/Alertas/Mensaje';
 import Modal from '../componets/Modals/ModalHistorialPedido';
-
+import { SearchInput } from './Barrabusqueda';
 
 const HistorialPedidos = () => {
   const { auth } = useContext(AuthContext);
   const [pedidos, setPedidos] = useState([]);
+  const [filteredPedidos, setFilteredPedidos] = useState([]);
   const [error, setError] = useState(null);
-  const [pedidoDetalles, setPedidoDetalles] = useState(null); // Para el modal
+  const [pedidoDetalles, setPedidoDetalles] = useState(null);
+  const [mensajeConfirmacion, setMensajeConfirmacion] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +40,7 @@ const HistorialPedidos = () => {
 
         if (response.status === 200) {
           setPedidos(response.data);
-
+          setFilteredPedidos(response.data);
         } else {
           setError('Error al obtener el historial de pedidos');
         }
@@ -52,11 +56,10 @@ const HistorialPedidos = () => {
   const handleViewPedidos = async (pedido) => {
     const userId = localStorage.getItem('userId');
     try {
-      const userId = localStorage.getItem('userId');
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/pedidos/buscar/${pedido._id}?cliente=${userId}`);
       setPedidoDetalles(pedido);
     } catch (error) {
-      setError('Error al obtener los productos');
+      showMessage('Error al obtener los productos', false);
       console.error('Error al obtener los productos', error);
     }
   };
@@ -64,19 +67,44 @@ const HistorialPedidos = () => {
   const cerrarModal = () => {
     setPedidoDetalles(null);
   };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const onSearchValue = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    setSearchValue(searchValue);
+    if (searchValue === '') {
+      setFilteredPedidos(pedidos);
+    } else {
+      const filtered = pedidos.filter((pedido) =>
+        pedido.estado.toLowerCase().includes(searchValue) ||
+        new Date(pedido.fecha).toLocaleDateString().includes(searchValue)
+      );
+      setFilteredPedidos(filtered);
+    }
+  };
+
+  const showMessage = (message, isSuccess) => {
+    setMensajeConfirmacion(message);
+    setTimeout(() => {
+      setMensajeConfirmacion('');
+    }, 3000);
+  };
+
   const canShowError = !!pedidos && pedidos?.length === 0;
 
   useEffect(() => {
-    setError(!!pedidos)
-  }, [pedidos, error])
+    setError(!!pedidos);
+  }, [pedidos, error]);
 
-
-  console.log(!!pedidos, (!canShowError) && !error, "a");
   return (
-      <main className='bg-white px-10 md:px-20 lg:px-40'>
+    <main className='bg-white px-10 md:px-20 lg:px-40'>
       <section className='flex items-center justify-between'>
         <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Historial de Pedidos</h2>
-        <div className='flex space-x-4'>
+        <div className='flex space-x-4 items-center'>
+          <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
           <button onClick={() => navigate(-1)} className="text-teal-600">
             <FaArrowLeft size={30} />
           </button>
@@ -91,8 +119,13 @@ const HistorialPedidos = () => {
           </button>
         </div>
       </section>
-      {error && <Mensaje tipo="exito">Pedidos encontrados</Mensaje>}
-      {(!canShowError) && !error ? (
+
+      {mensajeConfirmacion && (
+        <div className={`fixed bottom-4 right-4 px-4 py-2 rounded ${mensajeConfirmacion.includes('éxito') ? 'bg-green-500' : 'bg-red-500'} text-white`}>
+          {mensajeConfirmacion}
+        </div>
+      )}
+      {canShowError && !error ? (
         <Mensaje tipo="informacion">No hay pedidos en el historial.</Mensaje>
       ) : (
         <table className='w-full mt-5 table-auto shadow-lg bg-white'>
@@ -108,7 +141,7 @@ const HistorialPedidos = () => {
             </tr>
           </thead>
           <tbody>
-            {pedidos.map((pedido, index) => (
+            {filteredPedidos.map((pedido, index) => (
               <tr key={pedido._id} className="border-b hover:bg-gray-300 text-center">
                 <td className='p-2'>{index + 1}</td>
                 <td className='p-2'>{pedido.nombre}</td>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
-import { FaShoppingCart, FaHeart, FaSignOutAlt, FaHistory, FaBars, FaTimes } from 'react-icons/fa';
+import { FaShoppingCart, FaHeart, FaStore, FaBars, FaTimes } from 'react-icons/fa';
 import Modal from 'react-modal'; 
 import ModalCarrito from '../componets/Modals/ModalCarrito';
 import { SearchInput } from './Barrabusqueda';
@@ -14,6 +14,7 @@ Modal.setAppElement('#root');
 
 export const LandinPage = () => {
     const [productos, setProductos] = useState([]);
+    const [filteredProductos, setFilteredProductos] = useState([]);
     const [cartItems, setCartItems] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [cantidad, setCantidad] = useState(1);
@@ -31,6 +32,7 @@ export const LandinPage = () => {
         getProductosListar()
             .then(response => {
                 setProductos(response.data);
+                setFilteredProductos(response.data);
             })
             .catch(error => {
                 console.error('Error al obtener productos:', error);
@@ -44,116 +46,12 @@ export const LandinPage = () => {
         }
     }, []);
 
-    const handleAddToCartClick = (producto) => {
-        setProducto(producto);
-        setCantidad(1);
-        setModalIsOpen(true);
-    };
-
-    const handleUpdateCartClick = (producto) => {
-        setProducto(producto);
-        const itemInCart = cartItems.find(item => item._id === producto._id);
-        setCantidad(itemInCart.cantidad);
-        setModalIsOpen(true);
-    };
-
-    const addToCart = async () => {
-        try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/pedidos/agregar`, {
-                cliente: auth.userId,
-                producto: producto._id,
-                cantidad: cantidad
-            });
-
-            const updatedCartItems = cartItems.some(item => item._id === producto._id) 
-                ? cartItems.map(item => item._id === producto._id ? { ...item, cantidad: item.cantidad + cantidad } : item)
-                : [...cartItems, { ...producto, cantidad }];
-
-            setCartItems(updatedCartItems);
-            localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
-            setMensajeConfirmacion('Producto añadido con éxito');
-            setTipoMensaje(true); // Mensaje de éxito
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000);
-            setModalIsOpen(false);
-        } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Error al añadir producto';
-            setMensajeConfirmacion(errorMessage);
-            setTipoMensaje(false); // Mensaje de error
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000);
-            if (error.response?.data?.disponible) {
-                setCantidad(error.response.data.disponible);
-            }
-        }
-    };
-
-    const updateCart = async () => {
-        try {
-            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/pedidos/actualizar/${producto._id}`, {
-                cliente: auth.userId,
-                cantidad: cantidad
-            });
-
-            const updatedCartItems = cartItems.map(item =>
-                item._id === producto._id ? { ...item, cantidad: cantidad } : item
-            );
-            setCartItems(updatedCartItems);
-            localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
-            setMensajeConfirmacion('Producto actualizado con éxito');
-            setTipoMensaje(true); // Mensaje de éxito
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000);
-            setModalIsOpen(false);
-        } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Error al actualizar producto';
-            setMensajeConfirmacion(errorMessage);
-            setTipoMensaje(false); // Mensaje de error
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000);
-            if (error.response?.data?.disponible) {
-                setCantidad(error.response.data.disponible);
-            }
-        }
-    };
-
-    const addToFavorites = async (producto) => {
-        try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/favoritos/registro`, {
-                cliente: auth.userId,
-                producto: producto._id
-            });
-            setMensajeConfirmacion('Producto añadido a favoritos con éxito');
-            setTipoMensaje(true); // Mensaje de éxito
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000); 
-        } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Error al añadir a favoritos';
-            setMensajeConfirmacion(errorMessage);
-            setTipoMensaje(false); // Mensaje de error
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000);
-        }
-    };
-    
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
     
     const handleCategorySelect = async (categoryId) => {
-        setIsMenuOpen(false); // Cierra el menú de hamburguesa cuando se selecciona una categoría
+        setIsMenuOpen(false);
         try {
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/productos/categoria/${categoryId}`);
             if (Array.isArray(response.data)) {
@@ -184,11 +82,18 @@ export const LandinPage = () => {
 
     const [searchValue, setSearchValue] = useState("");
     const onSearchValue = (e) => {
-        const gettedValue = e.target.value;
-        setSearchValue(gettedValue);
-        getProductosListar(gettedValue)
-            .then(response => setProductos(response.data))
-            .catch(error => console.error('Error al obtener productos:', error));
+        const searchValue = e.target.value.toLowerCase();
+        setSearchValue(searchValue);
+        if (searchValue === "") {
+            setFilteredProductos(productos);
+        } else {
+            const filteredProductos = productos.filter((producto) => {
+                return (
+                    producto.nombre.toLowerCase().includes(searchValue)
+                );
+            });
+            setFilteredProductos(filteredProductos);
+        }
     };
 
     return (
@@ -196,7 +101,8 @@ export const LandinPage = () => {
             <section>
                 <div className='flex justify-between items-center'>
                     <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos Disponibles</h2>
-                    <div className='flex space-x-4'>
+                    <div className='flex space-x-4 items-center'> 
+                        <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
                         <button onClick={toggleMenu} className="text-teal-600">
                             {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
                         </button>
@@ -206,20 +112,23 @@ export const LandinPage = () => {
                         <Link to="/login" className="text-teal-600">
                             <FaHeart size={30} />
                         </Link>
+                        <Link to="/login" className="text-teal-600">
+                            <FaStore size={30} />
+                        </Link>
                     </div>
                 </div>
-                <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
             </section>
+
 
             {isMenuOpen && (
                 <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
-                    <CategoryList onCategorySelect={handleCategorySelect} /> {/* Pasa la función como prop */}
+                    <CategoryList onCategorySelect={handleCategorySelect} />
                 </section>
             )}
 
             <section>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center'>
-                    {productos.map((producto) => (
+                    {filteredProductos.map((producto) => (
                         <div key={producto._id} className='thumb-block'>
                             <div className='text-center shadow-2xl p-10 rounded-xl my-10'>
                                 <img 

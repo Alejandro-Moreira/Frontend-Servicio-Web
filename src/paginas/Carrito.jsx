@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Mensaje from '../componets/Alertas/Mensaje';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FaArrowLeft, FaTrash } from 'react-icons/fa';
@@ -34,8 +33,7 @@ const CarritoDeCompras = () => {
             setPedidoId(pedidoId);
             setCartItems(productos.filter(item => item.Producto));
         } catch (error) {
-            setMensaje(error.response?.data?.message || 'Error al listar los productos del pedido');
-            setTipoMensaje(false);
+            showMessage(error.response?.data?.message || 'Error al listar los productos del pedido', false);
         }
     };
 
@@ -49,12 +47,10 @@ const CarritoDeCompras = () => {
                 },
                 data: { cliente: userId },
             });
-            setMensaje(response.data.message);
-            setTipoMensaje(true);
+            showMessage(response.data.message, true);
             listarProductosPedido();
         } catch (error) {
-            setMensaje(error.response?.data?.message || 'Error al borrar el producto del pedido');
-            setTipoMensaje(false);
+            showMessage(error.response?.data?.message || 'Error al borrar el producto del pedido', false);
             console.error(error.response ? error.response.data : error.message);
         }
     };
@@ -69,12 +65,10 @@ const CarritoDeCompras = () => {
                 },
                 data: { cliente: userId },
             });
-            setMensaje(response.data.message);
-            setTipoMensaje(true);
+            showMessage(response.data.message, true);
             listarProductosPedido();
         } catch (error) {
-            setMensaje(error.response?.data?.message || 'Error al borrar el pedido');
-            setTipoMensaje(false);
+            showMessage(error.response?.data?.message || 'Error al borrar el pedido', false);
             console.error(error.response ? error.response.data : error.message);
         }
     };
@@ -98,8 +92,7 @@ const CarritoDeCompras = () => {
                 comision: entrega === 'casa'
             });
 
-            setMensaje(response.data.message);
-            setTipoMensaje(true);
+            showMessage(response.data.message, true);
 
             if (response.data.Pedido && response.data.Pedido.length > 0) {
                 const pedidoData = response.data.Pedido[0];
@@ -115,17 +108,27 @@ const CarritoDeCompras = () => {
                 setFactura(factura);
                 setMostrarFactura(true);
             } else {
-                setMensaje(response.data.message);
-                setTipoMensaje(false);
+                showMessage(response.data.message, false);
             }
 
             cerrarModal();
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Error al finalizar el pedido';
-            setMensaje(errorMessage);
-            setTipoMensaje(false);
+            showMessage(errorMessage, false);
             console.error(error.response ? error.response.data : error.message);
         }
+    };
+
+    const showMessage = (message, isSuccess) => {
+        setMensaje(message);
+        setTipoMensaje(isSuccess);
+        setTimeout(() => {
+            setMensaje('');
+        }, 3000);
+    };
+
+    const calcularTotal = () => {
+        return cartItems.reduce((total, item) => total + item.Precio * item.Cantidad, 0).toFixed(2);
     };
 
     return (
@@ -140,7 +143,11 @@ const CarritoDeCompras = () => {
                 </button>
             </div>
             <div>
-                {mensaje && <Mensaje tipo={tipoMensaje}>{mensaje}</Mensaje>}
+                {mensaje && (
+                    <div className={`fixed bottom-4 right-4 px-4 py-2 rounded ${tipoMensaje ? 'bg-green-500' : 'bg-red-500'} text-white`}>
+                        {mensaje}
+                    </div>
+                )}
                 {cartItems.length > 0 ? (
                     <div>
                         <div style={styles.tableHeader}>
@@ -167,6 +174,9 @@ const CarritoDeCompras = () => {
                                 </li>
                             ))}
                         </ul>
+                        <div style={styles.total}>
+                            <strong>Total: ${calcularTotal()}</strong>
+                        </div>
                         <button
                             style={{ ...styles.button, ...styles.payButton }}
                             onClick={finalizarPedido}>
@@ -219,34 +229,34 @@ const CarritoDeCompras = () => {
             )}
 
             {mostrarFactura && factura && (
-                <div className="factura">
+                <div className="factura" style={styles.factura}>
                     <h1>Gracias por realizar la compra en el minimarket "Mika y Vale"</h1>
                     <p>Fecha del pedido: {factura.fecha}</p>
                     <p>Nombre del cliente: {factura.nombreCliente}</p>
                     <p>Dirección: {factura.direccion}</p>
-                    <table>
+                    <table style={styles.facturaTable}>
                         <thead>
                             <tr>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Precio</th>
-                                <th>Total</th>
+                                <th style={styles.facturaTableTh}>Producto</th>
+                                <th style={styles.facturaTableTh}>Cantidad</th>
+                                <th style={styles.facturaTableTh}>Precio</th>
+                                <th style={styles.facturaTableTh}>Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             {factura.items.map((item, index) => (
                                 <tr key={index}>
-                                    <td>{item.Producto}</td>
-                                    <td>{item.Cantidad}</td>
-                                    <td>${item.Precio.toFixed(2)}</td>
-                                    <td>${(item.Precio * item.Cantidad).toFixed(2)}</td>
+                                    <td style={styles.facturaTableTd}>{item.Producto}</td>
+                                    <td style={styles.facturaTableTd}>{item.Cantidad}</td>
+                                    <td style={styles.facturaTableTd}>${item.Precio.toFixed(2)}</td>
+                                    <td style={styles.facturaTableTd}>${(item.Precio * item.Cantidad).toFixed(2)}</td>
                                 </tr>
                             ))}
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colSpan="3">Subtotal</td>
-                                <td>${factura.total.toFixed(2)}</td>
+                                <td colSpan="3" style={styles.facturaTableTd}>Subtotal</td>
+                                <td style={styles.facturaTableTd}>${factura.total.toFixed(2)}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -325,6 +335,11 @@ const styles = {
         marginTop: '20px',
         width: '100%',
         padding: '10px',
+        fontSize: '18px',
+    },
+    total: {
+        textAlign: 'right',
+        marginTop: '10px',
         fontSize: '18px',
     },
     noItems: {

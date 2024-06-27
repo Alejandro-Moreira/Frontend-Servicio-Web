@@ -37,6 +37,7 @@ import VerPedido from './paginas/VerPedido';
 import HistorialVentasCajero from './paginas/HistorialVentasCajero';
 import { CatalogoCajero } from './paginas/CatalogoCajero';
 import CarritoDeVentas from './paginas/CarritoVentas'
+import ListProducts from './paginas/ListProducts';
 
 function App() {
   return (
@@ -77,7 +78,8 @@ function App() {
               <Route path='catalogo' element={<Catalogo/>}/>
               <Route path='carrito-compra' element={<CarritoDeCompras/>}/>
               <Route path='favoritos' element={<Favoritos/>}/>
-              <Route path='categorias' element={<CategoryList />} />   
+              <Route path='categorias' element={<CategoryList />} />  
+              <Route path='productos/categoria/:categoryId' element={<ListProducts />} /> 
               <Route path='historial-pedidos' element={<HistorialPedidos/>}/>
               <Route path="cerrar-sesion" element={<CierreSesion />} />
               <Route path="/pedidos/:id" element={<VerPedido />} />
@@ -85,6 +87,7 @@ function App() {
               <Route path='catalogo-cajero' element={<CatalogoCajero/>}/>
               <Route path='carrito-ventas' element={<CarritoDeVentas/>}/>
               <Route path='categorias' element={<CategoryList />} />   
+              <Route path='productos/categoria/:categoryId' element={<ListProducts />} /> 
               <Route path='historial-ventas' element={<HistorialVentasCajero/>}/>
               <Route path='historial-ventas-cajeros' element={<HistorialVentasAdmin/>}/>
               <Route path='historial-pedidos-cajeros' element={<HistorialPedidosAdmin/>}/>

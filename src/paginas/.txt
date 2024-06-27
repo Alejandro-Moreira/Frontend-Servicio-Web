@@ -1,0 +1,70 @@
+{modalIsOpen && (
+                <ModalCarrito onClose={() => setModalIsOpen(false)}>
+                    <h2>{isInCart(producto?._id) ? 'Actualizar Producto del Carrito' : 'Agregar Producto al Carrito'}</h2>
+                    <p>{producto && producto.nombre}</p>
+                    <input 
+                        type="number" 
+                        placeholder="Cantidad" 
+                        value={cantidad} 
+                        onChange={(e) => setCantidad(Math.min(20, Math.max(1, Number(e.target.value))))} 
+                        min="1" 
+                        max="20" 
+                        className="border p-2 rounded"
+                    />
+                    {isInCart(producto?._id) ? (
+                        <button onClick="/login" className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
+                            Actualizar
+                        </button>
+                    ) : (
+                        <button onClick="/login" className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
+                            Agregar
+                        </button>
+                    )}
+                </ModalCarrito>
+            )}
+
+            {mensajeConfirmacion && (
+                <div className="fixed bottom-4 right-4">
+                    <Mensaje tipo={tipoMensaje}>{mensajeConfirmacion}</Mensaje>
+                </div>
+            )}
+
+            {productModalIsOpen && (
+                <Modal isOpen={productModalIsOpen} onRequestClose={closeProductModal} contentLabel="Productos de la Categoría">
+                    <h2 className="text-xl font-bold mb-4">Productos de la Categoría</h2>
+                    <button onClick={closeProductModal} className="absolute top-2 right-2 text-gray-600">X</button>
+                    {productError ? (
+                        <Mensaje tipo="informacion">{productError}</Mensaje>
+                    ) : (
+                        products.length === 0 ? (
+                            <Mensaje tipo="informacion">No hay productos para esta categoría</Mensaje>
+                        ) : (
+                            <ul>
+                                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center'>
+                                    {products.map(producto => (
+                                        <div key={producto._id} className='thumb-block'>
+                                            <div className='text-center shadow-2xl p-10 rounded-xl my-10'>
+                                                <img
+                                                    className='mx-auto h-40 w-40 object-cover'
+                                                    src={producto.imagen?.secure_url ? producto.imagen.secure_url : ''}
+                                                    alt={producto.nombre}
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = "" }}
+                                                />
+                                                <h3 className='text-lg font-medium pt-8 pb-2'>{producto.nombre}</h3>
+                                                <p className='text-gray-800 py-1'>{producto.descripcion}</p>
+                                                <p className='text-gray-800 py-1'>{producto.categoria}</p>
+                                                <p className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </ul>
+                        )
+                    )}
+                </Modal>
+            )}
+        </main>
+    );
+};
+
+export default LandinPage;

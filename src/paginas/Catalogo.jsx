@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
-import { FaShoppingCart, FaHeart, FaSignOutAlt, FaHistory, FaBars, FaTimes } from 'react-icons/fa';
+import { FaShoppingCart, FaHeart, FaSignOutAlt, FaHistory, FaBars, FaTimes, FaShopify } from 'react-icons/fa';
 import Modal from 'react-modal'; 
 import ModalCarrito from '../componets/Modals/ModalCarrito';
 import { SearchInput } from './Barrabusqueda';
@@ -14,6 +14,7 @@ Modal.setAppElement('#root');
 
 export const Catalogo = () => {
     const [productos, setProductos] = useState([]);
+    const [filteredProductos, setFilteredProductos] = useState([]);
     const [cartItems, setCartItems] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [cantidad, setCantidad] = useState(1);
@@ -31,6 +32,8 @@ export const Catalogo = () => {
         getProductosListar()
             .then(response => {
                 setProductos(response.data);
+                setFilteredProductos(response.data);
+
             })
             .catch(error => {
                 console.error('Error al obtener productos:', error);
@@ -184,11 +187,18 @@ export const Catalogo = () => {
 
     const [searchValue, setSearchValue] = useState("");
     const onSearchValue = (e) => {
-        const gettedValue = e.target.value;
-        setSearchValue(gettedValue);
-        getProductosListar(gettedValue)
-            .then(response => setProductos(response.data))
-            .catch(error => console.error('Error al obtener productos:', error));
+        const searchValue = e.target.value.toLowerCase();
+        setSearchValue(searchValue);
+        if (searchValue === "") {
+            setFilteredProductos(productos);
+        } else {
+            const filteredProductos = productos.filter((producto) => {
+                return (
+                    producto.nombre.toLowerCase().includes(searchValue)
+                );
+            });
+            setFilteredProductos(filteredProductos);
+        }
     };
 
     return (
@@ -196,7 +206,8 @@ export const Catalogo = () => {
             <section>
                 <div className='flex justify-between items-center'>
                     <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos Disponibles</h2>
-                    <div className='flex space-x-4'>
+                    <div className='flex space-x-4 items-center'> 
+                        <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
                         <button onClick={toggleMenu} className="text-teal-600">
                             {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
                         </button>
@@ -214,7 +225,6 @@ export const Catalogo = () => {
                         </button>
                     </div>
                 </div>
-                <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
             </section>
 
             {isMenuOpen && (
@@ -225,7 +235,7 @@ export const Catalogo = () => {
 
             <section>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center'>
-                    {productos.map((producto) => (
+                {filteredProductos.map((producto) => (
                         <div key={producto._id} className='thumb-block'>
                             <div className='text-center shadow-2xl p-10 rounded-xl my-10'>
                                 <img 
