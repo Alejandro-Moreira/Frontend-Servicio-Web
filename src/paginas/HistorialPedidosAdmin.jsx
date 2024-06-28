@@ -8,7 +8,6 @@ const HistorialPedidos = () => {
   const { auth } = useContext(AuthContext);
   const [pedidos, setPedidos] = useState([]);
   const [error, setError] = useState(null);
-  const [mensaje, setMensaje] = useState(null);
   const [pedidoDetalles, setPedidoDetalles] = useState(null); // Para el modal
 
   useEffect(() => {
@@ -31,14 +30,19 @@ const HistorialPedidos = () => {
 
         const response = await axios.get(url, options);
         if (response.status === 200) {
-          setPedidos(response.data);
-      
+          const pedidosData = response.data;
+
+          if (Array.isArray(pedidosData)) {
+            setVentas(pedidosData);
+          } else {
+            setError('No hay pedidos en el historial');
+          }
         } else {
-          setError('Error al obtener el historial de pedidos');
+          setError('No hay pedidos en el historial');
         }
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError('Error al obtener el historial de pedidos');
+        setError('No hay pedidos en el historial');
       }
     };
 
@@ -95,12 +99,12 @@ const HistorialPedidos = () => {
     setPedidoDetalles(null);
   };
 
+  if (error) return <Mensaje tipo="error">{error}</Mensaje>;
+
   return (
     <div className="historial-container">
       <h2 className="font-black text-4xl text-gray-500 mb-5">Historial de Pedidos</h2>
-      {error && <Mensaje tipo="error">{error}</Mensaje>}
-      {mensaje && <Mensaje tipo="exito">{mensaje}</Mensaje>}
-      {pedidos.length === 0 && !error ? (
+      {pedidos.length === 0 ? (
         <Mensaje tipo="informacion">No hay pedidos en el historial.</Mensaje>
       ) : (
         <table className='w-full mt-5 table-auto shadow-lg bg-white'>

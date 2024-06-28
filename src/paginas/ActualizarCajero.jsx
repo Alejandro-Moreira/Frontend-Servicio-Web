@@ -23,7 +23,7 @@ const ActualizarCajero = () => {
         setLoading(false);
         return;
       }
-
+      
       try {
         const url = `${import.meta.env.VITE_BACKEND_URL}/cajeros/mostrar?cliente=${userId}`;
         const { data } = await axios.get(url);

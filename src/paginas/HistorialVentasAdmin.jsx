@@ -35,14 +35,14 @@ const HistorialVentas = () => {
           if (Array.isArray(ventasData)) {
             setVentas(ventasData);
           } else {
-            setError('Error al obtener el historial de ventas');
+            setError('No hay ventas en el historial');
           }
         } else {
-          setError('Error al obtener el historial de ventas');
+          setError('No hay ventas en el historial');
         }
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError('Error al obtener el historial de ventas');
+        setError('No hay ventas en el historial');
       }
     };
 

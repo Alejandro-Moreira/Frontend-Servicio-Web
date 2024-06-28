@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Mensaje from '../componets/Alertas/Mensaje';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FaArrowLeft, FaTrash } from 'react-icons/fa';
@@ -34,12 +33,10 @@ const CarritoDeVentas = () => {
                 setVentasId(ventasId);
                 setCartItems(productos.filter(item => item.Producto));
             } else {
-                setMensaje('No se pudo obtener la información de ventas.');
-                setTipoMensaje(false);
+                showMessage('No se pudo obtener la información de ventas.', false);
             }
         } catch (error) {
-            setMensaje(error.response?.data?.message || 'Error al listar los productos de la venta');
-            setTipoMensaje(false);
+            showMessage(error.response?.data?.message || 'Error al listar los productos de la venta', false);
         }
     };
 
@@ -53,12 +50,10 @@ const CarritoDeVentas = () => {
                 },
                 data: { cliente: userId },
             });
-            setMensaje(response.data.message);
-            setTipoMensaje(true);
+            showMessage(response.data.message, true);
             listarProductosVentas();
         } catch (error) {
-            setMensaje(error.response?.data?.message || 'Error al borrar el producto de la venta');
-            setTipoMensaje(false);
+            showMessage(error.response?.data?.message || 'Error al borrar el producto de la venta', false);
             console.error(error.response ? error.response.data : error.message);
         }
     };
@@ -73,12 +68,10 @@ const CarritoDeVentas = () => {
                 },
                 data: { cliente: userId },
             });
-            setMensaje(response.data.message);
-            setTipoMensaje(true);
+            showMessage(response.data.message, true);
             listarProductosVentas();
         } catch (error) {
-            setMensaje(error.response?.data?.message || 'Error al borrar la venta');
-            setTipoMensaje(false);
+            showMessage(error.response?.data?.message || 'Error al borrar la venta', false);
             console.error(error.response ? error.response.data : error.message);
         }
     };
@@ -101,8 +94,7 @@ const CarritoDeVentas = () => {
                 cliente: userId
             });
 
-            setMensaje(response.data.message);
-            setTipoMensaje(true);
+            showMessage(response.data.message, true);
 
             if (response.data.Venta) {
                 const ventaId = Object.keys(response.data.Venta)[0];
@@ -122,22 +114,32 @@ const CarritoDeVentas = () => {
                 setFactura(factura);
                 setMostrarFactura(true);
             } else {
-                setMensaje('No se pudo obtener la información del pedido.');
-                setTipoMensaje(false);
+                showMessage('No se pudo obtener la información del pedido.', false);
             }
 
             cerrarModal();
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Error al finalizar la venta';
-            setMensaje(errorMessage);
-            setTipoMensaje(false);
+            showMessage(errorMessage, false);
             console.error(error.response ? error.response.data : error.message);
         }
     };
 
+    const showMessage = (message, isSuccess) => {
+        setMensaje(message);
+        setTipoMensaje(isSuccess);
+        setTimeout(() => {
+            setMensaje('');
+        }, 3000);
+    };
+
+    const calcularTotal = () => {
+        return cartItems.reduce((total, item) => total + item.Precio * item.Cantidad, 0).toFixed(2);
+    };
+
     return (
         <div style={styles.container}>
-            <h1 style={styles.header}>Carrito de Compras</h1>
+            <h1 style={styles.header}>Carrito de Ventas</h1>
             <div style={styles.topButtons}>
                 <button onClick={() => navigate(-1)} className="text-teal-600">
                     <FaArrowLeft size={30} />
@@ -147,7 +149,11 @@ const CarritoDeVentas = () => {
                 </button>
             </div>
             <div>
-                {mensaje && <Mensaje tipo={tipoMensaje}>{mensaje}</Mensaje>}
+                {mensaje && (
+                    <div className={`fixed bottom-4 right-4 px-4 py-2 rounded ${tipoMensaje ? 'bg-green-500' : 'bg-red-500'} text-white`}>
+                        {mensaje}
+                    </div>
+                )}
                 {cartItems.length > 0 && !mostrarFactura ? (
                     <div>
                         <div style={styles.tableHeader}>
@@ -174,6 +180,9 @@ const CarritoDeVentas = () => {
                                 </li>
                             ))}
                         </ul>
+                        <div style={styles.total}>
+                            <strong>Total: ${calcularTotal()}</strong>
+                        </div>
                         <button
                             style={{ ...styles.button, ...styles.payButton }}
                             onClick={finalizarPedido}>
@@ -311,6 +320,11 @@ const styles = {
         marginTop: '20px',
         width: '100%',
         padding: '10px',
+        fontSize: '18px',
+    },
+    total: {
+        textAlign: 'right',
+        marginTop: '10px',
         fontSize: '18px',
     },
     noItems: {

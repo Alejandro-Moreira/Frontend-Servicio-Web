@@ -2,24 +2,25 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
-import { FaShoppingCart, FaSignOutAlt, FaHistory, FaBars, FaTimes, FaCalendarCheck, FaFileInvoice} from 'react-icons/fa';
+import { FaShoppingCart, FaSignOutAlt, FaHistory, FaBars, FaTimes, FaCalendarCheck, FaFileInvoice } from 'react-icons/fa';
 import Modal from 'react-modal'; 
 import ModalCarrito from '../componets/Modals/ModalCarrito';
 import { SearchInput } from './Barrabusqueda';
 import { getProductosListar } from "./../services/getProductosListar";
 import CategoryList from './CategoriaCliente';
 import Mensaje from '../componets/Alertas/Mensaje';
-Modal.setAppElement('#root'); 
 
+Modal.setAppElement('#root'); 
 
 export const CatalogoCajero = () => {
     const [productos, setProductos] = useState([]);
+    const [filteredProductos, setFilteredProductos] = useState([]);
     const [cartItems, setCartItems] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [cantidad, setCantidad] = useState(1);
     const [producto, setProducto] = useState(null);
     const [mensajeConfirmacion, setMensajeConfirmacion] = useState('');
-    const [tipoMensaje, setTipoMensaje] = useState(null); // Añadido para manejar el tipo de mensaje
+    const [tipoMensaje, setTipoMensaje] = useState(null); 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [productModalIsOpen, setProductModalIsOpen] = useState(false);
@@ -31,6 +32,7 @@ export const CatalogoCajero = () => {
         getProductosListar()
             .then(response => {
                 setProductos(response.data);
+                setFilteredProductos(response.data);
             })
             .catch(error => {
                 console.error('Error al obtener productos:', error);
@@ -69,7 +71,7 @@ export const CatalogoCajero = () => {
             setCartItems(updatedCartItems);
             localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
             setMensajeConfirmacion('Producto añadido con éxito');
-            setTipoMensaje(true); // Mensaje de éxito
+            setTipoMensaje(true); 
             setTimeout(() => {
                 setMensajeConfirmacion('');
                 setTipoMensaje(null);
@@ -78,7 +80,7 @@ export const CatalogoCajero = () => {
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Error al añadir producto';
             setMensajeConfirmacion(errorMessage);
-            setTipoMensaje(false); // Mensaje de error
+            setTipoMensaje(false); 
             setTimeout(() => {
                 setMensajeConfirmacion('');
                 setTipoMensaje(null);
@@ -102,7 +104,7 @@ export const CatalogoCajero = () => {
             setCartItems(updatedCartItems);
             localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
             setMensajeConfirmacion('Producto actualizado con éxito');
-            setTipoMensaje(true); // Mensaje de éxito
+            setTipoMensaje(true); 
             setTimeout(() => {
                 setMensajeConfirmacion('');
                 setTipoMensaje(null);
@@ -111,7 +113,7 @@ export const CatalogoCajero = () => {
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Error al actualizar producto';
             setMensajeConfirmacion(errorMessage);
-            setTipoMensaje(false); // Mensaje de error
+            setTipoMensaje(false); 
             setTimeout(() => {
                 setMensajeConfirmacion('');
                 setTipoMensaje(null);
@@ -127,7 +129,7 @@ export const CatalogoCajero = () => {
     };
 
     const handleCategorySelect = async (categoryId) => {
-        setIsMenuOpen(false); // Cierra el menú de hamburguesa cuando se selecciona una categoría
+        setIsMenuOpen(false);
         try {
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/productos/categoria/${categoryId}`);
             if (Array.isArray(response.data)) {
@@ -158,11 +160,16 @@ export const CatalogoCajero = () => {
 
     const [searchValue, setSearchValue] = useState("");
     const onSearchValue = (e) => {
-        const gettedValue = e.target.value;
-        setSearchValue(gettedValue);
-        getProductosListar(gettedValue)
-            .then(response => setProductos(response.data))
-            .catch(error => console.error('Error al obtener productos:', error));
+        const searchValue = e.target.value.toLowerCase();
+        setSearchValue(searchValue);
+        if (searchValue === "") {
+            setFilteredProductos(productos);
+        } else {
+            const filteredProductos = productos.filter((producto) => {
+                return producto.nombre.toLowerCase().includes(searchValue);
+            });
+            setFilteredProductos(filteredProductos);
+        }
     };
 
     return (
@@ -170,14 +177,15 @@ export const CatalogoCajero = () => {
             <section>
                 <div className='flex justify-between items-center'>
                     <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos Disponibles</h2>
-                    <div className='flex space-x-4'>
+                    <div className='flex space-x-4 items-center'>
+                        <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
                         <button onClick={toggleMenu} className="text-teal-600">
                             {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
                         </button>
                         <Link to="/carrito-ventas" className="text-teal-600">
                             <FaShoppingCart size={30} />
                         </Link>
-                        <Link to="/historial-ventas" className="text-teal-600"> 
+                        <Link to="/historial-ventas" className="text-teal-600">
                             <FaHistory size={30} /> 
                         </Link>
                         <Link to="/historial-ventas-cajeros" className="text-teal-600"> 
@@ -191,38 +199,33 @@ export const CatalogoCajero = () => {
                         </button>
                     </div>
                 </div>
-                <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
             </section>
 
             {isMenuOpen && (
                 <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
-                    <CategoryList onCategorySelect={handleCategorySelect} /> {/* Pasa la función como prop */}
+                    <CategoryList onCategorySelect={handleCategorySelect} />
                 </section>
             )}
 
             <section>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center'>
-                    {productos.map((producto) => (
+                    {filteredProductos.map((producto) => (
                         <div key={producto._id} className='thumb-block'>
                             <div className='text-center shadow-2xl p-10 rounded-xl my-10'>
                                 <img 
                                     className='mx-auto h-40 w-40 object-cover'
                                     src={producto.imagen?.secure_url ? producto.imagen.secure_url : ''}
                                     alt={producto.nombre}
-                                    onError={(e) => {e.target.onerror = null; e.target.src=""}}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = "" }}
                                 />
                                 <h3 className='text-lg font-medium pt-8 pb-2'>{producto.nombre}</h3>
                                 <p className='text-gray-800 py-1'>{producto.descripcion}</p>
                                 <p className='text-gray-800 py-1'>{producto.categoria}</p>
                                 <p className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</p>
                                 {isInCart(producto._id) ? (
-                                    <>
-                                        <button onClick={() => handleAddToCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
-                                    </>
+                                    <button onClick={() => handleUpdateCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
                                 ) : (
-                                    <>
-                                        <button onClick={() => handleUpdateCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
-                                    </>
+                                    <button onClick={() => handleAddToCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
                                 )}
                             </div>
                         </div>
@@ -232,7 +235,7 @@ export const CatalogoCajero = () => {
 
             {modalIsOpen && (
                 <ModalCarrito onClose={() => setModalIsOpen(false)}>
-                    <h2>{isInCart(producto?._id) ?  'Agregar Producto al Carrito' : 'Actualizar Producto del Carrito'}</h2>
+                    <h2>{isInCart(producto?._id) ? 'Actualizar Producto del Carrito' : 'Agregar Producto al Carrito'}</h2>
                     <p>{producto && producto.nombre}</p>
                     <input 
                         type="number" 
@@ -243,15 +246,9 @@ export const CatalogoCajero = () => {
                         max="20" 
                         className="border p-2 rounded"
                     />
-                    {isInCart(producto?._id) ? (
-                        <button onClick={addToCart} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
-                            Agregar
-                        </button>
-                    ) : (
-                        <button onClick= {updateCart} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
-                            Actualizar
-                        </button>
-                    )}
+                    <button onClick={isInCart(producto?._id) ? updateCart : addToCart} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
+                        {isInCart(producto?._id) ? 'Actualizar' : 'Agregar'}
+                    </button>
                 </ModalCarrito>
             )}
 

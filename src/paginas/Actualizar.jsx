@@ -160,15 +160,18 @@ const ActualizarProducto = () => {
                 </div>
                 <div>
                     <label htmlFor='categoria' className='text-gray-700 uppercase font-bold text-sm'>Categoría:</label>
-                    <input
-                        id='categoria'
-                        type="text"
-                        className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
-                        placeholder='Categoría del producto'
-                        name='categoria'
-                        value={form.categoria}
-                        onChange={handleChange}
-                    />
+                    <select
+                    id='categoria'
+                    className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
+                    name='categoria'
+                    value={form.categoria}
+                    onChange={handleChange}
+                >
+                    <option value="">Selecciona una categoría</option>
+                    {categorias.map((cat) => (
+                        <option key={cat.id} value={cat.categoria}>{cat.categoria}</option>
+                    ))}
+                </select>
                 </div>
                 <div>
                     <label htmlFor='precio' className='text-gray-700 uppercase font-bold text-sm'>Precio:</label>
