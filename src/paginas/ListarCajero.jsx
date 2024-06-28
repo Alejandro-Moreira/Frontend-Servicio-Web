@@ -4,12 +4,15 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
 import Mensaje from '../componets/Alertas/Mensaje';
+import { FaSearch } from 'react-icons/fa';
 
 const MostrarCajeros = () => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const [cajeros, setCajeros] = useState([]);
+  const [filteredCajeros, setFilteredCajeros] = useState([]);
   const [error, setError] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
@@ -25,6 +28,7 @@ const MostrarCajeros = () => {
           }
         });
         setCajeros(response.data);
+        setFilteredCajeros(response.data);
       } catch (error) {
         setError('Error al obtener los cajeros');
         if (error.response) {
@@ -52,6 +56,7 @@ const MostrarCajeros = () => {
           data: { cliente: userId }
         });
         setCajeros(cajeros.filter(cajero => cajero._id !== id));
+        setFilteredCajeros(filteredCajeros.filter(cajero => cajero._id !== id));
       }
     } catch (error) {
       console.log(error);
@@ -63,6 +68,19 @@ const MostrarCajeros = () => {
     navigate('/dashboard/cajero-registro');
   };
 
+  const onSearchValue = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    setSearchValue(searchValue);
+    if (searchValue === '') {
+      setFilteredCajeros(cajeros);
+    } else {
+      const filtered = cajeros.filter((cajero) =>
+        cajero.username.toLowerCase().includes(searchValue)
+      );
+      setFilteredCajeros(filtered);
+    }
+  };
+
   return (
     <div className="my-5">
       <h1 className="font-black text-4xl text-gray-500 mb-5 text-center">Lista de Cajeros</h1>
@@ -72,8 +90,18 @@ const MostrarCajeros = () => {
           <MdAddCircleOutline className="h-7 w-7 mr-2" /> Crear Cajero
         </button>
       </div>
+      <div className="flex items-center mb-5">
+        <input
+          type="text"
+          placeholder="Buscar por nombre"
+          value={searchValue}
+          onChange={onSearchValue}
+          className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+        <FaSearch className="ml-3 text-gray-500" />
+      </div>
       {
-        cajeros.length === 0
+        filteredCajeros.length === 0
           ? <Mensaje tipo={'active'}>{'No existen registros'}</Mensaje>
           : <table className='w-full mt-5 table-auto shadow-lg bg-white'>
               <thead className='bg-gray-800 text-slate-400'>
@@ -87,7 +115,7 @@ const MostrarCajeros = () => {
               </thead>
               <tbody>
                 {
-                  cajeros.map((cajero, index) => (
+                  filteredCajeros.map((cajero, index) => (
                     <tr className="border-b hover:bg-gray-300 text-center" key={cajero._id}>
                       <td className='p-2'>{index + 1}</td>
                       <td className='p-2'>{cajero.username}</td>

@@ -178,7 +178,7 @@ export const CatalogoCajero = () => {
                 <div className='flex justify-between items-center'>
                     <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos Disponibles</h2>
                     <div className='flex space-x-4 items-center'>
-                        <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
+                        <SearchInput searchValue={searchValue} onSearch={onSearchValue}/>
                         <button onClick={toggleMenu} className="text-teal-600">
                             {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
                         </button>
@@ -200,7 +200,7 @@ export const CatalogoCajero = () => {
                     </div>
                 </div>
             </section>
-
+            <p className='text-slate-900 my-4 text-2xl text-right'>Bienvenido - {auth?.nombre}</p>
             {isMenuOpen && (
                 <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
                     <CategoryList onCategorySelect={handleCategorySelect} />

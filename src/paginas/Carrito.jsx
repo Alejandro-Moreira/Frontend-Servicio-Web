@@ -94,7 +94,7 @@ const CarritoDeCompras = () => {
 
             showMessage(response.data.message, true);
 
-            if (response.data.Pedido && response.data.Pedido.length > 0) {
+            if (response.data.Pedido) {
                 const pedidoData = response.data.Pedido[0];
                 const factura = {
                     fecha: new Date().toLocaleDateString(),
@@ -108,7 +108,7 @@ const CarritoDeCompras = () => {
                 setFactura(factura);
                 setMostrarFactura(true);
             } else {
-                showMessage(response.data.message, false);
+                showMessage('No se pudo obtener la información del pedido.', false);
             }
 
             cerrarModal();
@@ -232,7 +232,6 @@ const CarritoDeCompras = () => {
                 <div className="factura" style={styles.factura}>
                     <h1>Gracias por realizar la compra en el minimarket "Mika y Vale"</h1>
                     <p>Fecha del pedido: {factura.fecha}</p>
-                    <p>Nombre del cliente: {factura.nombreCliente}</p>
                     <p>Dirección: {factura.direccion}</p>
                     <table style={styles.facturaTable}>
                         <thead>
@@ -257,6 +256,10 @@ const CarritoDeCompras = () => {
                             <tr>
                                 <td colSpan="3" style={styles.facturaTableTd}>Subtotal</td>
                                 <td style={styles.facturaTableTd}>${factura.total.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan="3" style={styles.facturaTableTd}><strong>Total</strong></td>
+                                <td style={styles.facturaTableTd}><strong>${factura.total.toFixed(2)}</strong></td>
                             </tr>
                         </tfoot>
                     </table>

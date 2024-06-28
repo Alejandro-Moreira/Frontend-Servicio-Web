@@ -5,14 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import Mensaje from '../componets/Alertas/Mensaje'; 
 import AuthContext from '../context/AuthProvider';
 import Modal from 'react-modal';
+import { FaSearch } from 'react-icons/fa';
 
 const ListarCategorias = () => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
+  const [filteredCategorias, setFilteredCategorias] = useState([]);
   const [productos, setProductos] = useState([]);
+  const [filteredProductos, setFilteredProductos] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
+  const [productSearchValue, setProductSearchValue] = useState('');
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
@@ -20,6 +25,7 @@ const ListarCategorias = () => {
       try {
         const response = await axios.get(`${backendUrl}/categoria/listar`);
         setCategorias(response.data);
+        setFilteredCategorias(response.data);
       } catch (error) {
         setError('Error al obtener las categorías');
         console.error('Error al obtener las categorías', error);
@@ -45,6 +51,7 @@ const ListarCategorias = () => {
     try {
       const response = await axios.get(`${backendUrl}/productos/categoria/${categoria}`);
       setProductos(response.data);
+      setFilteredProductos(response.data);
       setModalIsOpen(true);
     } catch (error) {
       setError('Error al obtener los productos');
@@ -55,6 +62,33 @@ const ListarCategorias = () => {
   const closeModal = () => {
     setModalIsOpen(false);
     setProductos([]);
+    setFilteredProductos([]);
+  };
+
+  const onSearchValue = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    setSearchValue(searchValue);
+    if (searchValue === '') {
+      setFilteredCategorias(categorias);
+    } else {
+      const filtered = categorias.filter(categoria =>
+        categoria.categoria.toLowerCase().includes(searchValue)
+      );
+      setFilteredCategorias(filtered);
+    }
+  };
+
+  const onProductSearchValue = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    setProductSearchValue(searchValue);
+    if (searchValue === '') {
+      setFilteredProductos(productos);
+    } else {
+      const filtered = productos.filter(producto =>
+        producto.nombre.toLowerCase().includes(searchValue)
+      );
+      setFilteredProductos(filtered);
+    }
   };
 
   return (
@@ -66,8 +100,18 @@ const ListarCategorias = () => {
           <MdAddCircleOutline className="h-7 w-7 mr-2" /> Crear Categoría
         </button>
       </div>
+      <div className="flex items-center mb-5">
+        <input
+          type="text"
+          placeholder="Buscar por nombre"
+          value={searchValue}
+          onChange={onSearchValue}
+          className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+        <FaSearch className="ml-3 text-gray-500" />
+      </div>
       {
-        categorias.length === 0
+        filteredCategorias.length === 0
           ? <Mensaje tipo="informacion">No existen registros</Mensaje>
           : <table className='w-full mt-5 table-auto shadow-lg bg-white'>
               <thead className='bg-gray-800 text-slate-400'>
@@ -80,7 +124,7 @@ const ListarCategorias = () => {
               </thead>
               <tbody>
                 {
-                  categorias.map((categoria, index) => (
+                  filteredCategorias.map((categoria, index) => (
                     <tr className="border-b hover:bg-gray-300 text-center" key={categoria._id}>
                       <td className='p-2' title={categoria._id}>{index + 1}</td>
                       <td className='p-2'>{categoria.categoria}</td>
@@ -112,11 +156,21 @@ const ListarCategorias = () => {
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Productos de la Categoría">
         <h2 className="text-xl font-bold mb-4">Productos de la Categoría</h2>
         <button onClick={closeModal} className="absolute top-2 right-2 text-gray-600">X</button>
+        <div className="flex items-center mb-5">
+          <input
+            type="text"
+            placeholder="Buscar por nombre de producto"
+            value={productSearchValue}
+            onChange={onProductSearchValue}
+            className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+          <FaSearch className="ml-3 text-gray-500" />
+        </div>
         {
-          productos.length === 0
+          filteredProductos.length === 0
             ? <Mensaje tipo="informacion">No hay productos para esta categoría</Mensaje>
             : <ul>
-                {productos.map(producto => (
+                {filteredProductos.map(producto => (
                   <li key={producto._id} className="border-b p-2">
                     {producto.nombre}
                   </li>

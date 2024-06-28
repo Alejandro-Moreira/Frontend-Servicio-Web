@@ -197,7 +197,6 @@ const CarritoDeVentas = () => {
                     <div className="factura" style={styles.factura}>
                         <h1>Gracias por realizar la compra en el minimarket "Mika y Vale"</h1>
                         <p>Fecha del pedido: {factura.fecha}</p>
-                        <p>Nombre del cliente: {factura.nombreCliente}</p>
                         <table style={styles.facturaTable}>
                             <thead>
                                 <tr>

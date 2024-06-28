@@ -2,64 +2,68 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
 import Mensaje from '../componets/Alertas/Mensaje';
-import Modal from '../componets/Modals/ModalHistorialPedido'; 
+import Modal from '../componets/Modals/ModalHistorialPedido';
+import { FaSearch, FaArrowLeft } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const HistorialPedidos = () => {
   const { auth } = useContext(AuthContext);
   const [pedidos, setPedidos] = useState([]);
+  const [filteredPedidos, setFilteredPedidos] = useState([]);
   const [error, setError] = useState(null);
-  const [pedidoDetalles, setPedidoDetalles] = useState(null); // Para el modal
+  const [pedidoDetalles, setPedidoDetalles] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const obtenerHistorialPedidos = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const userId = localStorage.getItem('userId');
-        if (!token || !userId) {
-          setError('No estás autenticado');
-          return;
+  const obtenerHistorialPedidos = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userId');
+      if (!token || !userId) {
+        setError('No estás autenticado');
+        return;
+      }
+
+      const url = `${import.meta.env.VITE_BACKEND_URL}/pedidos/admin/mostrar?cliente=${userId}`;
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         }
+      };
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/pedidos/admin/mostrar?cliente=${userId}`;
-        const options = {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        };
+      const response = await axios.get(url, options);
+      if (response.status === 200) {
+        const pedidosData = response.data;
 
-        const response = await axios.get(url, options);
-        if (response.status === 200) {
-          const pedidosData = response.data;
-
-          if (Array.isArray(pedidosData)) {
-            setVentas(pedidosData);
-          } else {
-            setError('No hay pedidos en el historial');
-          }
+        if (Array.isArray(pedidosData)) {
+          setPedidos(pedidosData);
+          setFilteredPedidos(pedidosData);
         } else {
           setError('No hay pedidos en el historial');
         }
-      } catch (err) {
-        console.error('Error fetching data:', err);
+      } else {
         setError('No hay pedidos en el historial');
       }
-    };
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError('No hay pedidos en el historial');
+    }
+  };
 
+  useEffect(() => {
     obtenerHistorialPedidos();
   }, []);
-
-
 
   const handleViewPedidos = async (pedido) => {
     try {
       const userId = localStorage.getItem('userId');
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/${pedido._id}?cliente=${userId}`);
       if (pedido.estado === 'En espera') {
-        pedido.estado = 'En preparación'
+        pedido.estado = 'En preparación';
         setPedidoDetalles(pedido);
         setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'En preparación' } : p));
-      }else{
+      } else {
         setPedidoDetalles(pedido);
       }
     } catch (error) {
@@ -67,31 +71,30 @@ const HistorialPedidos = () => {
       console.error('Error al obtener los productos', error);
     }
   };
-  
 
   const handleChangeEnviado = async (pedido) => {
     try {
       const userId = localStorage.getItem('userId');
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/enviado/${pedido._id}?cliente=${userId}`);
-      if(pedido.estado === 'En preparación'){
+      await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/enviado/${pedido._id}?cliente=${userId}`);
+      if (pedido.estado === 'En preparación') {
         setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'Enviado' } : p));
       }
     } catch (error) {
-      setError('Error al obtener los productos');
-      console.error('Error al obtener los productos', error);
+      setError('Error al cambiar el estado');
+      console.error('Error al cambiar el estado', error);
     }
   };
 
   const handleChangePagado = async (pedido) => {
     try {
       const userId = localStorage.getItem('userId');
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/pagado/${pedido._id}?cliente=${userId}`);
-      if(pedido.estado === 'Enviado'){
+      await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/pagado/${pedido._id}?cliente=${userId}`);
+      if (pedido.estado === 'Enviado') {
         setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'Pagado' } : p));
       }
     } catch (error) {
-      setError('Error al obtener los productos');
-      console.error('Error al obtener los productos', error);
+      setError('Error al cambiar el estado');
+      console.error('Error al cambiar el estado', error);
     }
   };
 
@@ -99,11 +102,40 @@ const HistorialPedidos = () => {
     setPedidoDetalles(null);
   };
 
+  const onSearchValue = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    setSearchValue(searchValue);
+    if (searchValue === '') {
+      setFilteredPedidos(pedidos);
+    } else {
+      const filtered = pedidos.filter((pedido) =>
+        pedido.nombre.toLowerCase().includes(searchValue) ||
+        new Date(pedido.fecha).toLocaleDateString().includes(searchValue) ||
+        pedido.direccion.toLowerCase().includes(searchValue) ||
+        pedido.estado.toLowerCase().includes(searchValue)
+      );
+      setFilteredPedidos(filtered);
+    }
+  };
+
   if (error) return <Mensaje tipo="error">{error}</Mensaje>;
 
   return (
     <div className="historial-container">
       <h2 className="font-black text-4xl text-gray-500 mb-5">Historial de Pedidos</h2>
+      <div className="flex items-center mb-5">
+        <button onClick={() => navigate(-1)} className="text-teal-600 mr-3">
+          <FaArrowLeft size={30} />
+        </button>
+        <input
+          type="text"
+          placeholder="Buscar por cliente, fecha, dirección o estado..."
+          value={searchValue}
+          onChange={onSearchValue}
+          className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+        <FaSearch className="ml-3 text-gray-500" />
+      </div>
       {pedidos.length === 0 ? (
         <Mensaje tipo="informacion">No hay pedidos en el historial.</Mensaje>
       ) : (
@@ -120,7 +152,7 @@ const HistorialPedidos = () => {
             </tr>
           </thead>
           <tbody>
-            {pedidos.map((pedido, index) => (
+            {filteredPedidos.map((pedido, index) => (
               <tr key={pedido._id} className="border-b hover:bg-gray-300 text-center">
                 <td className='p-2'>{index + 1}</td>
                 <td className='p-2'>{pedido.nombre}</td>
@@ -129,30 +161,28 @@ const HistorialPedidos = () => {
                 <td className='p-2'>{pedido.direccion}</td>
                 <td className='p-2'>{pedido.estado}</td>
                 <td className='p-2'>
-                {pedido.estado === pedido.estado  ? (
                   <button
                     className="bg-gray-500 text-white px-3 py-1 rounded mr-2"
                     onClick={() => handleViewPedidos(pedido)}
                   >
                     Ver
                   </button>
-                ): null}
-                  {pedido.estado === 'En preparación' ? (
+                  {pedido.estado === 'En preparación' && (
                     <button
                       className="bg-green-500 text-white px-3 py-1 rounded"
                       onClick={() => handleChangeEnviado(pedido)}
                     >
                       Cambiar Estado
                     </button>
-                  ) : null}
-                  {pedido.estado === 'Enviado' ? (
+                  )}
+                  {pedido.estado === 'Enviado' && (
                     <button
                       className="bg-green-500 text-white px-3 py-1 rounded"
                       onClick={() => handleChangePagado(pedido)}
                     >
                       Cambiar Estado
                     </button>
-                  ) : null}
+                  )}
                 </td>
               </tr>
             ))}

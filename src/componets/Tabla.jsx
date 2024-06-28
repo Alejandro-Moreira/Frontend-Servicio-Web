@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { MdDeleteForever, MdNoteAdd, MdInfo } from "react-icons/md";
+import { FaSearch } from "react-icons/fa";
 import axios from 'axios';
 import Mensaje from "./Alertas/Mensaje";
 import JSConfetti from 'js-confetti';
@@ -12,6 +13,8 @@ const Tabla = () => {
     const jsConfetti = new JSConfetti();
     jsConfetti.addConfetti();
     const [productos, setProductos] = useState([]);
+    const [filteredProductos, setFilteredProductos] = useState([]);
+    const [searchValue, setSearchValue] = useState('');
 
     const listarProductos = async () => {
         try {
@@ -25,6 +28,7 @@ const Tabla = () => {
             };
             const respuesta = await axios.get(url, options);
             setProductos(respuesta.data);
+            setFilteredProductos(respuesta.data);
         } catch (error) {
             console.log(error);
         }
@@ -50,14 +54,37 @@ const Tabla = () => {
         }
     };
 
+    const onSearchValue = (e) => {
+        const searchValue = e.target.value.toLowerCase();
+        setSearchValue(searchValue);
+        if (searchValue === '') {
+            setFilteredProductos(productos);
+        } else {
+            const filtered = productos.filter(producto =>
+                producto.nombre.toLowerCase().includes(searchValue)
+            );
+            setFilteredProductos(filtered);
+        }
+    };
+
     useEffect(() => {
         listarProductos();
     }, []);
 
     return (
         <>
+            <div className="flex items-center mb-5">
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre de producto..."
+                    value={searchValue}
+                    onChange={onSearchValue}
+                    className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+                <FaSearch className="ml-3 text-gray-500" />
+            </div>
             {
-                productos.length === 0
+                filteredProductos.length === 0
                     ? <Mensaje tipo={'active'}>{'No existen registros'}</Mensaje>
                     : <table className='w-full mt-5 table-auto shadow-lg bg-white'>
                         <thead className='bg-gray-800 text-slate-400'>
@@ -74,7 +101,7 @@ const Tabla = () => {
                         </thead>
                         <tbody>
                             {
-                                productos.map((producto, index) => (
+                                filteredProductos.map((producto, index) => (
                                     <tr className="border-b hover:bg-gray-300 text-center" key={producto._id}>
                                         <td>{index + 1}</td>
                                         <td>{producto.nombre}</td>

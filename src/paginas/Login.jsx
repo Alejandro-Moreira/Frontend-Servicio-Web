@@ -36,7 +36,7 @@ const Login = () => {
                 } else {
                     rol = form.email === 'mikayvale2024@outlook.com' ? 'admin' : 'cliente'; 
                 }
-                const nombre = form.email.split('@')[0];
+                const nombre = respuesta.data.username;
                 const token = 'dummy-token';
                 // Almacenar en localStorage
                 localStorage.setItem('token', token);
