@@ -97,11 +97,17 @@ export const LandinPage = () => {
     };
 
     return (
-        <main className='bg-white px-10 md:px-20 lg:px-40'>
+        <main className='bg-white px-10 md:px-20 lg:px-0'>
+            <div className="sticky top-0 z-50" style={{ backgroundColor: 'white', paddingBottom : '25px'}}>
+                <div className="bg-teal-600 text-white p-4 text-center text-2xl font-bold">
+                    Minimarket "Mika y Vale"
+                </div>
             <section>
-                <div className='flex justify-between items-center'>
-                    <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos Disponibles</h2>
-                    <div className='flex space-x-4 items-center'> 
+                <div className='flex justify-between items-center px-20'>
+                    <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>
+                        Productos Disponibles
+                    </h2>
+                    <div className='flex space-x-4 items-center'>
                         <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
                         <button onClick={toggleMenu} className="text-teal-600">
                             {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
@@ -118,6 +124,8 @@ export const LandinPage = () => {
                     </div>
                 </div>
             </section>
+            </div>
+
 
 
             {isMenuOpen && (
@@ -127,7 +135,7 @@ export const LandinPage = () => {
             )}
 
             <section>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center'>
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center lg:px-20'>
                     {filteredProductos.map((producto) => (
                         <div key={producto._id} className='thumb-block'>
                             <div className='text-center shadow-2xl p-10 rounded-xl my-10'>
@@ -224,6 +232,14 @@ export const LandinPage = () => {
                     )}
                 </Modal>
             )}
+            <footer className="bg-teal-600 text-white p-4 mt-4 sticky bottom-0">
+                <div className="text-center">
+                    <p>Contacto: 0967881741</p>
+                    <p>Dirección: Calle Pedro de Andrade & General Florencio O'leary, Quito, Ecuador</p>
+                    <p>Horario: Lunes a Viernes de 6 AM - 10 PM</p>
+                </div>
+            </footer>
+
         </main>
     );
 };

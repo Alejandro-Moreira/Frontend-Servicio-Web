@@ -3,20 +3,17 @@ import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
 import Mensaje from '../componets/Alertas/Mensaje';
 import Modal from 'react-modal';
-import { FaShoppingCart, FaBars, FaTimes, FaCalendarCheck, FaFileInvoice, FaArrowLeft } from 'react-icons/fa';
-import { useNavigate, Link } from 'react-router-dom';
-import { SearchInput } from './Barrabusqueda';
-import CategoryList from './CategoriaCliente';
+import { FaShoppingCart, FaSignOutAlt, FaBars, FaTimes, FaCalendarCheck, FaFileInvoice, FaArrowLeft, FaSearch } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
 
-const HistorialVentasCajero = () => {
+const HistorialVentas = () => {
   const { auth } = useContext(AuthContext);
   const [ventas, setVentas] = useState([]);
   const [filteredVentas, setFilteredVentas] = useState([]);
   const [error, setError] = useState(null);
   const [ventaDetalles, setVentaDetalles] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,15 +42,15 @@ const HistorialVentasCajero = () => {
             setVentas(ventasData);
             setFilteredVentas(ventasData);
           } else {
-            setError('Error al obtener el historial de ventas');
+            setError('No hay ventas en el historial');
           }
         } else {
-          setError('Error al obtener el historial de ventas');
+          setError('No hay ventas en el historial');
         }
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError('Error al obtener el historial de ventas');
-      }
+        setError('No hay ventas en el historial');
+        }
     };
 
     obtenerHistorialVentas();
@@ -62,7 +59,7 @@ const HistorialVentasCajero = () => {
   const handleViewVentas = async (venta) => {
     try {
       const userId = localStorage.getItem('userId');
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/buscar/${venta._id}?cliente=${userId}`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cajeros/${venta._id}?cliente=${userId}`);
       if (response.status === 200) {
         setVentaDetalles(response.data);
         setModalIsOpen(true);
@@ -78,10 +75,6 @@ const HistorialVentasCajero = () => {
   const cerrarModal = () => {
     setModalIsOpen(false);
     setVentaDetalles(null);
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
   };
 
   const onSearchValue = (e) => {
@@ -101,35 +94,41 @@ const HistorialVentasCajero = () => {
   if (error) return <Mensaje tipo="error">{error}</Mensaje>;
 
   return (
-    <main className='bg-white px-10 md:px-20 lg:px-40'>
-      <section className='flex items-center justify-between'>
-        <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Historial de Ventas</h2>
-        <div className='flex space-x-4 items-center'>
-          <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
-          <button onClick={() => navigate(-1)} className="text-teal-600">
-            <FaArrowLeft size={30} />
-          </button>
-          <button onClick={() => navigate('/carrito-compra')} className="text-teal-600">
-            <FaShoppingCart size={30} />
-          </button>
-          <button onClick={toggleMenu} className="text-teal-600">
-            {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
-          </button>
-          <Link to="/historial-ventas-cajeros" className="text-teal-600">
-            <FaFileInvoice size={30} />
-          </Link>
-          <Link to="/historial-pedidos-cajeros" className="text-teal-600">
-            <FaCalendarCheck size={30} />
-          </Link>
+    <div className="historial-container">
+      <div className='flex justify-between items-center'>
+      <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-4xl'>Historial Ventas Cajeros</h2>
+      <div className='flex space-x- items-center mr-20'>
+          <section>
+            <div className='flex justify-between items-center'>
+                <div className='flex space-x-4 items-center'>
+                    <Link to="/carrito-ventas" className="text-teal-600">
+                        <FaShoppingCart size={30} />
+                    </Link>
+                    <Link to="/historial-ventas-cajeros" className="text-teal-600"> 
+                        <FaFileInvoice size={30} /> 
+                    </Link>
+                    <Link to="/historial-pedidos-cajeros" className="text-teal-600"> 
+                        <FaCalendarCheck size={30} /> 
+                    </Link>
+                </div>
+            </div>
+          </section>
         </div>
-      </section>
-
-      {isMenuOpen && (
-        <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
-          <CategoryList onCategorySelect={toggleMenu} />
-        </section>
-      )}
-
+      </div>
+      <div className="flex items-center mb-5">
+        <button onClick={() => navigate(-1)} className="text-teal-600 mr-3">
+          <FaArrowLeft size={30} />
+        </button>
+        <input
+          type="text"
+          placeholder="Buscar por cajero o fecha"
+          value={searchValue}
+          onChange={onSearchValue}
+          className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          style={{ width: '400px' }}
+        />
+        <FaSearch className="ml-3 text-gray-500" />
+      </div>
       {ventas.length === 0 ? (
         <Mensaje tipo="informacion">No hay ventas en el historial.</Mensaje>
       ) : (
@@ -147,7 +146,7 @@ const HistorialVentasCajero = () => {
             {filteredVentas.map((venta, index) => (
               <tr key={venta._id} className="border-b hover:bg-gray-300 text-center">
                 <td className='p-2'>{index + 1}</td>
-                <td className='p-2'>{venta.cajero}</td>
+                <td className='p-2'>{venta.cajero}</td> 
                 <td className='p-2'>${venta.total}</td>
                 <td className='p-2'>{new Date(venta.fecha).toLocaleDateString()}</td>
                 <td className='p-2'>
@@ -163,7 +162,6 @@ const HistorialVentasCajero = () => {
           </tbody>
         </table>
       )}
-
       {modalIsOpen && ventaDetalles && (
         <Modal isOpen={modalIsOpen} onRequestClose={cerrarModal} contentLabel="Detalles de la Venta">
           <div style={styles.factura}>
@@ -202,11 +200,11 @@ const HistorialVentasCajero = () => {
                 </tr>
               </tfoot>
             </table>
-            <button onClick={cerrarModal} className="mt-4 px-4 py-2 bg-gray-500 text-white rounded">Cerrar</button>
+            <button onClick={cerrarModal} style={{ marginLeft: '590px' }} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">Cerrar</button>
           </div>
         </Modal>
       )}
-    </main>
+    </div>
   );
 };
 
@@ -235,4 +233,4 @@ const styles = {
   },
 };
 
-export default HistorialVentasCajero;
+export default HistorialVentas;

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthProvider';
 import Mensaje from '../componets/Alertas/Mensaje';
-import Modal from '../componets/Modals/ModalHistorialPedido';
+import Modal from 'react-modal';
 import { FaSearch, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +12,7 @@ const HistorialPedidos = () => {
   const [filteredPedidos, setFilteredPedidos] = useState([]);
   const [error, setError] = useState(null);
   const [pedidoDetalles, setPedidoDetalles] = useState(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
 
@@ -59,16 +60,15 @@ const HistorialPedidos = () => {
     try {
       const userId = localStorage.getItem('userId');
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/${pedido._id}?cliente=${userId}`);
-      if (pedido.estado === 'En espera') {
-        pedido.estado = 'En preparación';
-        setPedidoDetalles(pedido);
-        setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'En preparación' } : p));
+      if (response.status === 200) {
+        setPedidoDetalles(response.data);
+        setModalIsOpen(true);
       } else {
-        setPedidoDetalles(pedido);
+        setError('Error al obtener los detalles del pedido');
       }
     } catch (error) {
-      setError('Error al obtener los productos');
-      console.error('Error al obtener los productos', error);
+      setError('Error al obtener los detalles del pedido');
+      console.error('Error al obtener los detalles del pedido', error);
     }
   };
 
@@ -78,6 +78,7 @@ const HistorialPedidos = () => {
       await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/enviado/${pedido._id}?cliente=${userId}`);
       if (pedido.estado === 'En preparación') {
         setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'Enviado' } : p));
+        setFilteredPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'Enviado' } : p));
       }
     } catch (error) {
       setError('Error al cambiar el estado');
@@ -91,6 +92,7 @@ const HistorialPedidos = () => {
       await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/pagado/${pedido._id}?cliente=${userId}`);
       if (pedido.estado === 'Enviado') {
         setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'Pagado' } : p));
+        setFilteredPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'Pagado' } : p));
       }
     } catch (error) {
       setError('Error al cambiar el estado');
@@ -99,6 +101,7 @@ const HistorialPedidos = () => {
   };
 
   const cerrarModal = () => {
+    setModalIsOpen(false);
     setPedidoDetalles(null);
   };
 
@@ -133,6 +136,7 @@ const HistorialPedidos = () => {
           value={searchValue}
           onChange={onSearchValue}
           className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          style={{ width : '400px'}}
         />
         <FaSearch className="ml-3 text-gray-500" />
       </div>
@@ -189,31 +193,75 @@ const HistorialPedidos = () => {
           </tbody>
         </table>
       )}
-      {pedidoDetalles && (
-        <Modal onClose={cerrarModal}>
-          <h2 className="text-2xl font-bold mb-4">Detalles del Pedido</h2>
-          <p><strong>ID:</strong> {pedidoDetalles._id}</p>
-          <p><strong>Cliente:</strong> {pedidoDetalles.nombre}</p>
-          <p><strong>Dirección:</strong> {pedidoDetalles.direccion}</p>
-          <p><strong>Fecha:</strong> {new Date(pedidoDetalles.fecha).toLocaleDateString()}</p>
-          <p><strong>Estado:</strong> {pedidoDetalles.estado}</p>
-          <p><strong>Productos:</strong></p>
-          <p><strong>Total:</strong> ${pedidoDetalles.total}</p>
-          <ul>
-            {pedidoDetalles.producto.map((producto, index) => (
-              <li key={index}>{producto}</li>
-            ))}
-          </ul>
-          <p><strong>Cantidad:</strong></p>
-          <ul>
-            {pedidoDetalles.cantidad.map((cant, index) => (
-              <li key={index}>{cant}</li>
-            ))}
-          </ul>
+      {modalIsOpen && pedidoDetalles && (
+        <Modal isOpen={modalIsOpen} onRequestClose={cerrarModal} contentLabel="Detalles del Pedido">
+          <div style={styles.factura}>
+            <h1>Detalles del Pedido</h1>
+            <p><strong>ID:</strong> {pedidoDetalles._id}</p>
+            <p><strong>Cliente:</strong> {pedidoDetalles.nombre}</p>
+            <p><strong>Dirección:</strong> {pedidoDetalles.direccion}</p>
+            <p><strong>Fecha:</strong> {new Date(pedidoDetalles.fecha).toLocaleDateString()}</p>
+            <table style={styles.facturaTable}>
+              <thead>
+                <tr>
+                  <th style={styles.facturaTableTh}>Producto</th>
+                  <th style={styles.facturaTableTh}>Cantidad</th>
+                  <th style={styles.facturaTableTh}>Precio</th>
+                  <th style={styles.facturaTableTh}>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pedidoDetalles.producto.map((producto, index) => (
+                  <tr key={index}>
+                    <td style={styles.facturaTableTd}>{producto}</td>
+                    <td style={styles.facturaTableTd}>{pedidoDetalles.cantidad[index]}</td>
+                    <td style={styles.facturaTableTd}>${pedidoDetalles.precio[index].toFixed(2)}</td>
+                    <td style={styles.facturaTableTd}>${(pedidoDetalles.precio[index] * pedidoDetalles.cantidad[index]).toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan="3" style={styles.facturaTableTd}>Subtotal</td>
+                  <td style={styles.facturaTableTd}>${pedidoDetalles.total.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td colSpan="3" style={styles.facturaTableTd}><strong>Total</strong></td>
+                  <td style={styles.facturaTableTd}><strong>${pedidoDetalles.total.toFixed(2)}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+            <button onClick={cerrarModal} style={{ marginLeft: '590px' }} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">Cerrar</button>
+          </div>
         </Modal>
       )}
     </div>
   );
+};
+
+const styles = {
+  factura: {
+    padding: '20px',
+    maxWidth: '800px',
+    margin: '0 auto',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '10px',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+  },
+  facturaTable: {
+    width: '100%',
+    borderCollapse: 'collapse',
+  },
+  facturaTableTh: {
+    borderBottom: '2px solid #ddd',
+    padding: '10px',
+    textAlign: 'left',
+  },
+  facturaTableTd: {
+    borderBottom: '1px solid #ddd',
+    padding: '10px',
+    textAlign: 'left',
+  },
 };
 
 export default HistorialPedidos;

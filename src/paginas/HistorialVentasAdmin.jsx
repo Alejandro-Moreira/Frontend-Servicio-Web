@@ -106,6 +106,7 @@ const HistorialVentas = () => {
           value={searchValue}
           onChange={onSearchValue}
           className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          style={{ width: '400px' }}
         />
         <FaSearch className="ml-3 text-gray-500" />
       </div>
@@ -180,7 +181,7 @@ const HistorialVentas = () => {
                 </tr>
               </tfoot>
             </table>
-            <button onClick={cerrarModal} className="mt-4 px-4 py-2 bg-gray-500 text-white rounded">Cerrar</button>
+            <button onClick={cerrarModal} style={{ marginLeft: '590px' }} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">Cerrar</button>
           </div>
         </Modal>
       )}

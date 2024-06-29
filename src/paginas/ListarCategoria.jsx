@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { MdDeleteForever, MdEdit, MdAddCircleOutline } from 'react-icons/md';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Mensaje from '../componets/Alertas/Mensaje'; 
+import Mensaje from '../componets/Alertas/Mensaje';
 import AuthContext from '../context/AuthProvider';
 import Modal from 'react-modal';
 import { FaSearch } from 'react-icons/fa';
@@ -107,6 +107,7 @@ const ListarCategorias = () => {
           value={searchValue}
           onChange={onSearchValue}
           className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          style={{ width: '400px' }}
         />
         <FaSearch className="ml-3 text-gray-500" />
       </div>
@@ -114,44 +115,44 @@ const ListarCategorias = () => {
         filteredCategorias.length === 0
           ? <Mensaje tipo="informacion">No existen registros</Mensaje>
           : <table className='w-full mt-5 table-auto shadow-lg bg-white'>
-              <thead className='bg-gray-800 text-slate-400'>
-                <tr>
-                  <th className='p-2'>N°</th>
-                  <th className='p-2'>Categoría</th>
-                  <th className='p-2'>Ver Productos</th>
-                  <th className='p-2 text-center'>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  filteredCategorias.map((categoria, index) => (
-                    <tr className="border-b hover:bg-gray-300 text-center" key={categoria._id}>
-                      <td className='p-2' title={categoria._id}>{index + 1}</td>
-                      <td className='p-2'>{categoria.categoria}</td>
-                      <td className='p-2'>
-                        <button className='bg-blue-600 text-white px-3 py-1 rounded-full hover:bg-blue-800' onClick={() => handleViewProducts(categoria.categoria)}>
-                          Ver Productos
-                        </button>
-                      </td>
-                      <td className='py-2 text-center'>
-                        {
-                          auth.rol === "admin" && (
-                            <>
-                              <button className='btn btn-warning btn-sm mx-1' onClick={() => handleEdit(categoria._id)}>
-                                <MdEdit className="h-7 w-7 text-slate-800" />
-                              </button>
-                              <button className='btn btn-danger btn-sm mx-1' onClick={() => handleDelete(categoria._id)}>
-                                <MdDeleteForever className="h-7 w-7 text-red-900" />
-                              </button>
-                            </>
-                          )
-                        }
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
+            <thead className='bg-gray-800 text-slate-400'>
+              <tr>
+                <th className='p-2'>N°</th>
+                <th className='p-2'>Categoría</th>
+                <th className='p-2'>Ver Productos</th>
+                <th className='p-2 text-center'>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                filteredCategorias.map((categoria, index) => (
+                  <tr className="border-b hover:bg-gray-300 text-center" key={categoria._id}>
+                    <td className='p-2' title={categoria._id}>{index + 1}</td>
+                    <td className='p-2'>{categoria.categoria}</td>
+                    <td className='p-2'>
+                      <button className='bg-blue-600 text-white px-3 py-1 rounded-full hover:bg-blue-800' onClick={() => handleViewProducts(categoria.categoria)}>
+                        Ver Productos
+                      </button>
+                    </td>
+                    <td className='py-2 text-center'>
+                      {
+                        auth.rol === "admin" && (
+                          <>
+                            <button className='btn btn-warning btn-sm mx-1' onClick={() => handleEdit(categoria._id)}>
+                              <MdEdit className="h-7 w-7 text-slate-800" />
+                            </button>
+                            <button className='btn btn-danger btn-sm mx-1' onClick={() => handleDelete(categoria._id)}>
+                              <MdDeleteForever className="h-7 w-7 text-red-900" />
+                            </button>
+                          </>
+                        )
+                      }
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
       }
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Productos de la Categoría">
         <h2 className="text-xl font-bold mb-4">Productos de la Categoría</h2>
@@ -170,12 +171,12 @@ const ListarCategorias = () => {
           filteredProductos.length === 0
             ? <Mensaje tipo="informacion">No hay productos para esta categoría</Mensaje>
             : <ul>
-                {filteredProductos.map(producto => (
-                  <li key={producto._id} className="border-b p-2">
-                    {producto.nombre}
-                  </li>
-                ))}
-              </ul>
+              {filteredProductos.map(producto => (
+                <li key={producto._id} className="border-b p-2">
+                  {producto.nombre}
+                </li>
+              ))}
+            </ul>
         }
       </Modal>
     </div>
