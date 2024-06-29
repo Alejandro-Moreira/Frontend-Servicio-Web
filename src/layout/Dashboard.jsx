@@ -40,7 +40,7 @@ const Dashboard = () => {
             <div className='md:w-1/5 bg-gray-800 px-5 py-4'>
                 <h2 className='text-4xl font-black text-center text-slate-200'>Minimarket "Mika y Vale"</h2>
 
-                <img src="https://cdn-icons-png.flaticon.com/512/2138/2138508.png" alt="img-client" className="m-auto mt-8 p-1 border-2 border-slate-500 rounded-full" width={120} height={120} />
+                <img src="https://img.freepik.com/vector-premium/administrador-pagina_313674-6634.jpg" alt="img-client" className="m-auto mt-8 p-1 border-2 border-slate-500 rounded-full" width={120} height={120} />
                 <p className='text-slate-400 text-center my-4 text-sm'><span className='bg-green-600 w-3 h-3 inline-block rounded-full'></span> Bienvenido - {auth?.nombre}</p>
                 <p className='text-slate-400 text-center my-4 text-sm'>Rol - {auth?.rol}</p>
                 <hr className="mt-5 border-slate-500" />
@@ -59,7 +59,7 @@ const Dashboard = () => {
                         Bienvenido - {auth?.nombre}
                     </div>
                     <div>
-                        <img src="https://cdn-icons-png.flaticon.com/512/4715/4715329.png" alt="img-client" className="border-2 border-green-600 rounded-full" width={50} height={50} />
+                        <img src="https://static.vecteezy.com/system/resources/previews/023/883/491/non_2x/business-person-icon-cool-vector.jpg" alt="img-client" className="border-2 border-green-600 rounded-full" width={50} height={50} />
                     </div>
                     <div>
                         <Link to='cerrar-sesion' className="text-white mr-3 text-md block hover:bg-red-900 text-center bg-red-800 px-4 py-1 rounded-lg">

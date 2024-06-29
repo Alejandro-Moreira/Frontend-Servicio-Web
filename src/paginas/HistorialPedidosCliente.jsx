@@ -6,6 +6,7 @@ import { FaArrowLeft, FaShoppingCart, FaList, FaHeart } from 'react-icons/fa';
 import Mensaje from '../componets/Alertas/Mensaje';
 import Modal from 'react-modal';
 import { SearchInput } from './Barrabusqueda';
+import jsPDF from 'jspdf';
 
 const HistorialPedidos = () => {
   const { auth } = useContext(AuthContext);
@@ -112,6 +113,34 @@ const HistorialPedidos = () => {
     setError(!!pedidos);
   }, [pedidos, error]);
 
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Detalles de la Venta", 20, 20);
+    doc.text(`ID: ${pedidoDetalles._id}`, 20, 30);
+    doc.text(`Cliente: ${pedidoDetalles.nombre}`, 20, 40);
+    doc.text(`Dirección: ${pedidoDetalles.direccion}`, 20, 50);
+    doc.text(`Total: $${pedidoDetalles.total}`, 20, 60);
+    doc.text(`Fecha: ${new Date(pedidoDetalles.fecha).toLocaleDateString()}`, 20, 70);
+    doc.text(`Estado: ${pedidoDetalles.estado}`, 20, 80);
+
+    let startY = 90;
+    doc.text("Productos:", 20, startY);
+    startY += 10;
+    pedidoDetalles.producto.forEach((producto, index) => {
+      doc.text(`Producto: ${producto}`, 20, startY + (index * 10));
+      doc.text(`Cantidad: ${pedidoDetalles.cantidad[index]}`, 70, startY + (index * 10));
+      doc.text(`Precio: $${pedidoDetalles.precio[index].toFixed(2)}`, 110, startY + (index * 10));
+      doc.text(`Total: $${(pedidoDetalles.precio[index] * pedidoDetalles.cantidad[index]).toFixed(2)}`, 150, startY + (index * 10));
+    });
+
+    startY += pedidoDetalles.producto.length * 10 + 10;
+    doc.text(`Subtotal: $${subtotal(pedidoDetalles.comision, pedidoDetalles.total).toFixed(2)}`, 20, startY);
+    doc.text(`Comisión: $${obtenerComision(pedidoDetalles.comision).toFixed(2)}`, 20, startY + 10);
+    doc.text(`Total: $${pedidoDetalles.total.toFixed(2)}`, 20, startY + 20);
+
+    doc.save("factura.pdf");
+  };
+
   return (
     <main className='bg-white px-10 md:px-20 lg:px-40'>
       <section className='flex items-center justify-between'>
@@ -178,51 +207,51 @@ const HistorialPedidos = () => {
 
       {modalIsOpen && pedidoDetalles && (
         <Modal isOpen={modalIsOpen} onRequestClose={cerrarModal} contentLabel="Detalles de la Venta">
-        <div style={styles.factura}>
-          <h1>Detalles de la Venta</h1>
-          <p><strong>ID:</strong> {pedidoDetalles._id}</p>
-          <p><strong>Cliente:</strong> {pedidoDetalles.nombre}</p>
-          <p><strong>Dirección:</strong> {pedidoDetalles.direccion}</p>
-          <p><strong>Total:</strong> ${pedidoDetalles.total}</p>
-          <p><strong>Fecha:</strong> {new Date(pedidoDetalles.fecha).toLocaleDateString()}</p>
-          <p><strong>Estado:</strong> {pedidoDetalles.estado}</p>
-          <table style={styles.facturaTable}>
-            <thead>
-              <tr>
-                <th style={styles.facturaTableTh}>Producto</th>
-                <th style={styles.facturaTableTh}>Cantidad</th>
-                <th style={styles.facturaTableTh}>Precio</th>
-                <th style={styles.facturaTableTh}>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pedidoDetalles.producto.map((producto, index) => (
-                <tr key={index}>
-                  <td style={styles.facturaTableTd}>{producto}</td>
-                  <td style={styles.facturaTableTd}>{pedidoDetalles.cantidad[index]}</td>
-                  <td style={styles.facturaTableTd}>${pedidoDetalles.precio[index].toFixed(2)}</td>
-                  <td style={styles.facturaTableTd}>${(pedidoDetalles.precio[index] * pedidoDetalles.cantidad[index]).toFixed(2)}</td>
+          <div style={styles.factura}>
+            <h1>Detalles de la Venta</h1>
+            <p><strong>ID:</strong> {pedidoDetalles._id}</p>
+            <p><strong>Cliente:</strong> {pedidoDetalles.nombre}</p>
+            <p><strong>Dirección:</strong> {pedidoDetalles.direccion}</p>
+            <p><strong>Total:</strong> ${pedidoDetalles.total}</p>
+            <p><strong>Fecha:</strong> {new Date(pedidoDetalles.fecha).toLocaleDateString()}</p>
+            <p><strong>Estado:</strong> {pedidoDetalles.estado}</p>
+            <table style={styles.facturaTable}>
+              <thead>
+                <tr>
+                  <th style={styles.facturaTableTh}>Producto</th>
+                  <th style={styles.facturaTableTh}>Cantidad</th>
+                  <th style={styles.facturaTableTh}>Precio</th>
+                  <th style={styles.facturaTableTh}>Total</th>
                 </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan="3" style={styles.facturaTableTd}>Subtotal</td>
-                <td style={styles.facturaTableTd}>${subtotal(pedidoDetalles.comision, pedidoDetalles.total).toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td colSpan="3" style={styles.facturaTableTd}>Comisión</td>
-                <td style={styles.facturaTableTd}>${obtenerComision(pedidoDetalles.comision).toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td colSpan="3" style={styles.facturaTableTd}><strong>Total</strong></td>
-                <td style={styles.facturaTableTd}><strong>${pedidoDetalles.total.toFixed(2)}</strong></td>
-              </tr>
-            </tfoot>
-          </table>
-          <button onClick={cerrarModal} style={{ marginLeft: '590px' }} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">Cerrar</button>
-
-        </div>
+              </thead>
+              <tbody>
+                {pedidoDetalles.producto.map((producto, index) => (
+                  <tr key={index}>
+                    <td style={styles.facturaTableTd}>{producto}</td>
+                    <td style={styles.facturaTableTd}>{pedidoDetalles.cantidad[index]}</td>
+                    <td style={styles.facturaTableTd}>${pedidoDetalles.precio[index].toFixed(2)}</td>
+                    <td style={styles.facturaTableTd}>${(pedidoDetalles.precio[index] * pedidoDetalles.cantidad[index]).toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan="3" style={styles.facturaTableTd}>Subtotal</td>
+                  <td style={styles.facturaTableTd}>${subtotal(pedidoDetalles.comision, pedidoDetalles.total).toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td colSpan="3" style={styles.facturaTableTd}>Comisión</td>
+                  <td style={styles.facturaTableTd}>${obtenerComision(pedidoDetalles.comision).toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td colSpan="3" style={styles.facturaTableTd}><strong>Total</strong></td>
+                  <td style={styles.facturaTableTd}><strong>${pedidoDetalles.total.toFixed(2)}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+            <button onClick={cerrarModal} style={{ marginLeft: '590px' }} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">Cerrar</button>
+            <button onClick={downloadPDF} style={{ marginLeft: '10px' }} className="mt-4 px-4 py-2 bg-green-500 text-white rounded">Descargar PDF</button>
+          </div>
         </Modal>
       )}
     </main>
