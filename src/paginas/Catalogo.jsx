@@ -9,6 +9,7 @@ import { SearchInput } from './Barrabusqueda';
 import { getProductosListar } from "./../services/getProductosListar";
 import CategoryList from './CategoriaCliente';
 import Mensaje from '../componets/Alertas/Mensaje';
+import { useWindowWidth } from '../hooks/useWindowWidth'
 
 Modal.setAppElement('#root'); 
 
@@ -17,6 +18,7 @@ export const Catalogo = () => {
     const [filteredProductos, setFilteredProductos] = useState([]);
     const [cartItems, setCartItems] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const windowWidth = useWindowWidth();
     const [cantidad, setCantidad] = useState(1);
     const [producto, setProducto] = useState(null);
     const [mensajeConfirmacion, setMensajeConfirmacion] = useState('');
@@ -201,7 +203,7 @@ export const Catalogo = () => {
         }
     };
 
-    return (
+    return windowWidth > 768 ? (
         <main className='bg-white px-10 md:px-20 lg:px-40'>
             <section>
                 <div className='flex justify-between items-center'>
@@ -333,5 +335,12 @@ export const Catalogo = () => {
                 </Modal>
             )}
         </main>
-    );
+    ): (
+        <>
+            <div style={{ alignContent: 'center', margin: '0 100px 5% 100px', background: 'red', border: '40px solid red' }}>
+                <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
+                <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg " alt="movil" className="center" />
+            </div>
+        </>
+    )
 };

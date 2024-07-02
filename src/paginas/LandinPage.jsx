@@ -9,6 +9,7 @@ import { SearchInput } from './Barrabusqueda';
 import { getProductosListar } from "./../services/getProductosListar";
 import CategoryList from './CategoriaCliente';
 import Mensaje from '../componets/Alertas/Mensaje';
+import { useWindowWidth } from '../hooks/useWindowWidth'
 
 Modal.setAppElement('#root'); 
 
@@ -16,6 +17,7 @@ export const LandinPage = () => {
     const [productos, setProductos] = useState([]);
     const [filteredProductos, setFilteredProductos] = useState([]);
     const [cartItems, setCartItems] = useState([]);
+    const windowWidth = useWindowWidth();
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [cantidad, setCantidad] = useState(1);
     const [producto, setProducto] = useState(null);
@@ -96,7 +98,7 @@ export const LandinPage = () => {
         }
     };
 
-    return (
+    return windowWidth > 768 ? (
         <main className='bg-white px-10 md:px-20 lg:px-0'>
             <div className="sticky top-0 z-50" style={{ backgroundColor: 'white', paddingBottom : '25px'}}>
                 <div className="bg-teal-600 text-white p-4 text-center text-2xl font-bold">
@@ -241,7 +243,14 @@ export const LandinPage = () => {
             </footer>
 
         </main>
-    );
+    ): (
+        <>
+            <div style={{ alignContent: 'center', margin: '0 100px 5% 100px', background: 'red', border: '40px solid red' }}>
+                <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
+                <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg " alt="movil" className="center" />
+            </div>
+        </>
+    )
 };
 
 export default LandinPage;

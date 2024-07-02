@@ -1,9 +1,11 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import AuthContext from '../context/AuthProvider';
+import { useWindowWidth } from '../hooks/useWindowWidth'
 
 const Dashboard = () => {
     const location = useLocation();
+    const windowWidth = useWindowWidth();
     const urlActual = location.pathname;
     const { auth } = useContext(AuthContext);
     const autenticado = localStorage.getItem('token');
@@ -35,7 +37,7 @@ const Dashboard = () => {
         }
     };
 
-    return (
+    return windowWidth > 768 ? (
         <div className='md:flex md:min-h-screen'>
             <div className='md:w-1/5 bg-gray-800 px-5 py-4'>
                 <h2 className='text-4xl font-black text-center text-slate-200'>Minimarket "Mika y Vale"</h2>
@@ -75,7 +77,14 @@ const Dashboard = () => {
                 </div>
             </div>
         </div>
-    );
+    ) : (
+        <>
+            <div style={{ alignContent: 'center', margin: '0 100px 5% 100px', background: 'red', border: '40px solid red' }}>
+                <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
+                <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg " alt="movil" className="center" />
+            </div>
+        </>
+    )
 }
 
 export default Dashboard;
