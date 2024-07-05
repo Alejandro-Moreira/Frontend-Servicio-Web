@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import confirmar from '../assets/confirmar.jpg'
+import confirmar from '../assets/Confirmar.jpg'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
