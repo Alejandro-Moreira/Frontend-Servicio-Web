@@ -74,18 +74,25 @@ export const Catalogo = () => {
                 ? cartItems.map(item => item._id === producto._id ? { ...item, cantidad: item.cantidad + cantidad } : item)
                 : [...cartItems, { ...producto, cantidad }];
 
-            setCartItems(updatedCartItems);
-            localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
-            setMensajeConfirmacion('Producto añadido con éxito');
-            setTipoMensaje(true); // Mensaje de éxito
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000);
+            if(response.data.message == `Solo tenemos en stock ${producto.cantidad}`){
+                setMensajeConfirmacion(`Solo tenemos en stock ${producto.cantidad}`);
+                setTipoMensaje(false);
+                setTimeout(() => {
+                    setMensajeConfirmacion('');
+                    setTipoMensaje(null);
+                }, 3000);
+            }else{
+                setCartItems(updatedCartItems);
+                localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+                setMensajeConfirmacion('Producto añadido con éxito');
+                setTipoMensaje(true); // Mensaje de éxito
+                setTimeout(() => {
+                    setMensajeConfirmacion('');
+                    setTipoMensaje(null);
+                }, 3000);
+            }
             setModalIsOpen(false);
         } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Error al añadir producto';
-            setMensajeConfirmacion(errorMessage);
             setTipoMensaje(false); // Mensaje de error
             setTimeout(() => {
                 setMensajeConfirmacion('');
@@ -132,16 +139,25 @@ export const Catalogo = () => {
 
     const addToFavorites = async (producto) => {
         try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/favoritos/registro`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/favoritos/registro`, {
                 cliente: auth.userId,
                 producto: producto._id
             });
-            setMensajeConfirmacion('Producto añadido a favoritos con éxito');
-            setTipoMensaje(true); // Mensaje de éxito
-            setTimeout(() => {
-                setMensajeConfirmacion('');
-                setTipoMensaje(null);
-            }, 3000); 
+            if(response.data.message == 'Ese producto ya se encuentra en favoritos'){
+                setMensajeConfirmacion('Ese producto ya se encuentra en favoritos');
+                setTipoMensaje(false); // Mensaje de éxito
+                setTimeout(() => {
+                    setMensajeConfirmacion('');
+                    setTipoMensaje(null);
+                }, 3000); 
+            }else{
+                setMensajeConfirmacion('Producto añadido a favoritos con éxito');
+                setTipoMensaje(true); // Mensaje de éxito
+                setTimeout(() => {
+                    setMensajeConfirmacion('');
+                    setTipoMensaje(null);
+                }, 3000); 
+            }
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Error al añadir a favoritos';
             setMensajeConfirmacion(errorMessage);

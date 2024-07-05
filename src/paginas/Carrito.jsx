@@ -3,7 +3,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FaArrowLeft, FaTrash } from 'react-icons/fa';
-import { useWindowWidth } from '../hooks/useWindowWidth'
+import { useWindowWidth } from '../hooks/useWindowWidth';
+
+Modal.setAppElement('#root'); 
 
 const CarritoDeCompras = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -34,8 +36,9 @@ const CarritoDeCompras = () => {
             const productos = pedido[pedidoId];
             setPedidoId(pedidoId);
             setCartItems(productos.filter(item => item.Producto));
+            localStorage.setItem('cartItems', JSON.stringify(productos.filter(item => item.Producto)));
         } catch (error) {
-            showMessage(error.response?.data?.message || 'Error al listar los productos del pedido', false);
+            showMessage(error.response?.data?.message || 'No se esta realizando ningún pedido', false);
         }
     };
 
@@ -50,7 +53,9 @@ const CarritoDeCompras = () => {
                 data: { cliente: userId },
             });
             showMessage(response.data.message, true);
-            listarProductosPedido();
+            const updatedCartItems = cartItems.filter(item => item.idProducto !== producto.idProducto);
+            setCartItems(updatedCartItems);
+            localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
         } catch (error) {
             showMessage(error.response?.data?.message || 'Error al borrar el producto del pedido', false);
             console.error(error.response ? error.response.data : error.message);
@@ -68,7 +73,8 @@ const CarritoDeCompras = () => {
                 data: { cliente: userId },
             });
             showMessage(response.data.message, true);
-            listarProductosPedido();
+            setCartItems([]);
+            localStorage.removeItem('cartItems');
         } catch (error) {
             showMessage(error.response?.data?.message || 'Error al borrar el pedido', false);
             console.error(error.response ? error.response.data : error.message);
@@ -83,8 +89,23 @@ const CarritoDeCompras = () => {
         setModalIsOpen(false);
     };
 
-    const finalizarPedido = () => {
-        abrirModal();
+    const confirmarEntrega = () => {
+        setModalIsOpen(false);
+        procesarPedido();
+    };
+
+    const obtenerComision = () => {
+        return entrega === 'casa' ? 0.50 : 0;
+    };
+
+    const calcularSubtotal = () => {
+        return cartItems.reduce((total, item) => total + item.Precio * item.Cantidad, 0).toFixed(2);
+    };
+
+    const calcularTotal = () => {
+        const subtotal = parseFloat(calcularSubtotal());
+        const comision = obtenerComision();
+        return (subtotal + comision).toFixed(2);
     };
 
     const procesarPedido = async () => {
@@ -96,29 +117,37 @@ const CarritoDeCompras = () => {
 
             showMessage(response.data.message, true);
 
-            if (response.data.Pedido) {
-                const pedidoData = response.data.Pedido[0];
-                const factura = {
-                    fecha: new Date().toLocaleDateString(),
-                    items: cartItems,
-                    total: pedidoData.Total,
-                    entrega,
-                    nombreCliente: pedidoData.NombreCliente,
-                    direccion: entrega === 'casa' ? 'Dirección de entrega' : 'Retiro en local'
-                };
+            const pedidoKey = Object.keys(response.data.Pedido)[0];
+            const pedidoData = response.data.Pedido[pedidoKey];
+            const productos = pedidoData[0];
+            const detalles = pedidoData[1];
 
-                setFactura(factura);
-                setMostrarFactura(true);
-            } else {
-                showMessage('No se pudo obtener la información del pedido.', false);
-            }
+            const factura = {
+                fecha: new Date(detalles.Fecha).toLocaleDateString(),
+                items: productos.Producto.map((prod, index) => ({
+                    Producto: prod,
+                    Cantidad: productos.Cantidad[index],
+                    Precio: productos.Precio[index],
+                })),
+                subtotal: parseFloat(calcularSubtotal()),
+                comision: obtenerComision(),
+                total: parseFloat(calcularTotal()),
+                entrega,
+                nombreCliente: userId,
+                direccion: entrega === 'casa' ? 'Dirección de entrega' : 'Retiro en local'
+            };
 
-            cerrarModal();
+            setFactura(factura);
+            setMostrarFactura(true);
+            localStorage.removeItem('cartItems');
         } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Error al finalizar el pedido';
-            showMessage(errorMessage, false);
+            showMessage(response.data.message);
             console.error(error.response ? error.response.data : error.message);
         }
+    };
+
+    const finalizarPedido = () => {
+        abrirModal();
     };
 
     const showMessage = (message, isSuccess) => {
@@ -127,10 +156,6 @@ const CarritoDeCompras = () => {
         setTimeout(() => {
             setMensaje('');
         }, 3000);
-    };
-
-    const calcularTotal = () => {
-        return cartItems.reduce((total, item) => total + item.Precio * item.Cantidad, 0).toFixed(2);
     };
 
     return windowWidth > 768 ? (
@@ -165,7 +190,7 @@ const CarritoDeCompras = () => {
                                     <span style={styles.column}>{producto.Producto}</span>
                                     <span style={styles.column}><img src={producto.imagen} alt="Imagen del Producto" className="w-20 h-20 object-cover" /></span>
                                     <span style={styles.column}>{producto.Cantidad}</span>
-                                    <span style={styles.column}>{producto.Precio}</span>
+                                    <span style={styles.column}>${producto.Precio.toFixed(2)}</span>
                                     <div style={styles.buttons}>
                                         <button
                                             style={{ ...styles.button, ...styles.deleteButton }}
@@ -176,6 +201,12 @@ const CarritoDeCompras = () => {
                                 </li>
                             ))}
                         </ul>
+                        <div style={styles.total}>
+                            <strong>Subtotal: ${calcularSubtotal()}</strong>
+                        </div>
+                        <div style={styles.total}>
+                            <strong>Comisión: ${obtenerComision().toFixed(2)}</strong>
+                        </div>
                         <div style={styles.total}>
                             <strong>Total: ${calcularTotal()}</strong>
                         </div>
@@ -194,38 +225,36 @@ const CarritoDeCompras = () => {
                 <Modal
                     isOpen={modalIsOpen}
                     onRequestClose={cerrarModal}
-                    contentLabel="Seleccionar Entrega"
+                    contentLabel="Confirmar entrega"
                     style={modalStyles}
                 >
-                    <div className="modal-header" style={styles.modalHeader}><strong>Finalizar Pedido</strong></div>
+                    <div className="modal-header" style={styles.modalHeader}><strong>Opciones de Entrega</strong></div>
                     <div className="modal-body" style={styles.modalBody}>
-                        <p>Seleccione la opción de entrega:</p>
-                        <div className="modal-radio-group" style={styles.radioGroup}>
-                            <label className="modal-radio-label" style={styles.radioLabel}>
+                        <p>Seleccione una opción de entrega:</p>
+                        <div style={styles.entregaOptions}>
+                            <label>
                                 <input
                                     type="radio"
-                                    name="entrega"
                                     value="local"
                                     checked={entrega === 'local'}
-                                    onChange={() => setEntrega('local')}
+                                    onChange={(e) => setEntrega(e.target.value)}
                                 />
-                                <span>Retirar en el local</span>
+                                Retirar en el local
                             </label>
-                            <label className="modal-radio-label" style={styles.radioLabel}>
+                            <label>
                                 <input
                                     type="radio"
-                                    name="entrega"
                                     value="casa"
                                     checked={entrega === 'casa'}
-                                    onChange={() => setEntrega('casa')}
+                                    onChange={(e) => setEntrega(e.target.value)}
                                 />
-                                <span>Entregar en casa</span>
+                                Entregar en casa
                             </label>
                         </div>
                     </div>
                     <div className="modal-footer" style={styles.modalFooter}>
-                        <button onClick={procesarPedido} className="modal-confirm-button" style={styles.confirmButton}>Confirmar</button>
-                        <button onClick={cerrarModal} className="modal-cancel-button" style={styles.cancelButton}>Cancelar</button>
+                        <button onClick={confirmarEntrega} className="modal-close-button" style={styles.confirmButton}>Confirmar</button>
+                        <button onClick={cerrarModal} className="modal-close-button" style={styles.cancelButton}>Cancelar</button>
                     </div>
                 </Modal>
             )}
@@ -234,7 +263,6 @@ const CarritoDeCompras = () => {
                 <div className="factura" style={styles.factura}>
                     <h1>Gracias por realizar la compra en el minimarket "Mika y Vale"</h1>
                     <p>Fecha del pedido: {factura.fecha}</p>
-                    <p>Dirección: {factura.direccion}</p>
                     <table style={styles.facturaTable}>
                         <thead>
                             <tr>
@@ -257,7 +285,11 @@ const CarritoDeCompras = () => {
                         <tfoot>
                             <tr>
                                 <td colSpan="3" style={styles.facturaTableTd}>Subtotal</td>
-                                <td style={styles.facturaTableTd}>${factura.total.toFixed(2)}</td>
+                                <td style={styles.facturaTableTd}>${factura.subtotal.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan="3" style={styles.facturaTableTd}>Comisión</td>
+                                <td style={styles.facturaTableTd}>${factura.comision.toFixed(2)}</td>
                             </tr>
                             <tr>
                                 <td colSpan="3" style={styles.facturaTableTd}><strong>Total</strong></td>
@@ -269,13 +301,11 @@ const CarritoDeCompras = () => {
             )}
         </div>
     ) : (
-        <>
-            <div style={{ alignContent: 'center', margin: '0 100px 5% 100px', background: 'red', border: '40px solid red' }}>
-                <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
-                <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg " alt="movil" className="center" />
-            </div>
-        </>
-    )
+        <div style={{ alignContent: 'center', margin: '0 100px 5% 100px', background: 'red', border: '40px solid red' }}>
+            <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no está disponible para móviles</h1>
+            <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg" alt="movil" className="center" />
+        </div>
+    );
 };
 
 const styles = {
@@ -358,12 +388,19 @@ const styles = {
         textAlign: 'center',
         fontStyle: 'italic',
     },
-    factura: {
+    entregaOptions: {
+        display: 'flex',
+        justifyContent: 'space-around',
         marginTop: '20px',
+        marginBottom: '20px',
+    },
+    factura: {
         padding: '20px',
-        border: '1px solid #ddd',
+        maxWidth: '800px',
+        margin: '0 auto',
+        backgroundColor: '#f9f9f9',
         borderRadius: '10px',
-        backgroundColor: '#fff',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
     },
     facturaTable: {
         width: '100%',
@@ -396,20 +433,6 @@ const styles = {
     },
     modalHeader: {
         fontWeight: 'bold',
-    },
-    modalBody: {
-        marginTop: '10px',
-        marginBottom: '10px',
-    },
-    radioGroup: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-    },
-    radioLabel: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
     },
     modalFooter: {
         display: 'flex',

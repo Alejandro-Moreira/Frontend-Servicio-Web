@@ -1,31 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 import { FaShoppingCart, FaHeart, FaHistory } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Mensaje from '../componets/Alertas/Mensaje';
 
-const CategoryList = () => {
-  const [categories, setCategories] = useState([]);
-  const [error, setError] = useState(null);
+const FavoriteCategoryList = ({ categoriasFavoritas, onCategorySelect }) => {
   const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(`${backendUrl}/categoria/listar`);
-        setCategories(response.data);
-      } catch (error) {
-        setError('Error al mostrar categorías');
-        console.error('Error al mostrar categorías:', error);
-      }
-    };
-
-    fetchCategories();
-  }, [backendUrl]);
 
   const handleViewProducts = (categoryName) => {
-    navigate(`/productos/categoria/${categoryName}`);
+    navigate(`/categorias-favoritos/${categoryName}`);
   };
 
   const favoritosLogin = () => {
@@ -70,7 +52,7 @@ const CategoryList = () => {
   return (
     <div className="category-container">
       <div className="flex items-center mb-5">
-        <h2 className="font-black text-4xl text-teal-600 mr-4">Categorías</h2>
+        <h2 className="font-black text-4xl text-teal-600 mr-4">Categorías Favoritas</h2>
         <div className="flex space-x-4">
           <button onClick={CarritosLogin} className="text-teal-600">
             <FaShoppingCart size={30} />
@@ -81,11 +63,11 @@ const CategoryList = () => {
           </button>
         </div>
       </div>
-      {error && <Mensaje tipo="error">{error}</Mensaje>}
+      {categoriasFavoritas.length === 0 && <Mensaje tipo="informacion">No hay categorías favoritas</Mensaje>}
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-        {categories.map(categoria => (
+        {categoriasFavoritas.map(categoria => (
           <div
-            key={categoria._id}
+            key={categoria}
             style={{
               border: '1px solid #ddd',
               borderRadius: '8px',
@@ -95,9 +77,12 @@ const CategoryList = () => {
               width: '200px',
               textAlign: 'center'
             }}
-            onClick={() => handleViewProducts(categoria.categoria)}
+            onClick={() => {
+              handleViewProducts(categoria);
+              onCategorySelect();
+            }}
           >
-            <h3>{categoria.categoria}</h3>
+            <h3>{categoria}</h3>
           </div>
         ))}
       </div>
@@ -105,4 +90,4 @@ const CategoryList = () => {
   );
 };
 
-export default CategoryList;
+export default FavoriteCategoryList;

@@ -48,6 +48,10 @@ export const CatalogoCajero = () => {
         }
     }, []);
 
+    useEffect(() => {
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    }, [cartItems]);
+
     const handleAddToCartClick = (producto) => {
         setProducto(producto);
         setCantidad(1);
@@ -57,21 +61,30 @@ export const CatalogoCajero = () => {
     const handleUpdateCartClick = (producto) => {
         setProducto(producto);
         const itemInCart = cartItems.find(item => item._id === producto._id);
-        setCantidad(itemInCart.cantidad);
+        setCantidad(itemInCart ? itemInCart.cantidad : 1);
         setModalIsOpen(true);
     };
 
     const addToCart = async () => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ventas/agregar`, {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ventas/agregar`, {
                 cliente: auth.userId,
                 producto: producto._id,
                 cantidad: cantidad
             });
 
-            let updatedCartItems = [...cartItems, { ...producto, cantidad }];
+            const itemInCart = cartItems.find(item => item._id === producto._id);
+            let updatedCartItems;
+
+            if (itemInCart) {
+                updatedCartItems = cartItems.map(item =>
+                    item._id === producto._id ? { ...item, cantidad: item.cantidad + cantidad } : item
+                );
+            } else {
+                updatedCartItems = [...cartItems, { ...producto, cantidad }];
+            }
+
             setCartItems(updatedCartItems);
-            localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
             setMensajeConfirmacion('Producto añadido con éxito');
             setTipoMensaje(true); 
             setTimeout(() => {
@@ -95,7 +108,7 @@ export const CatalogoCajero = () => {
 
     const updateCart = async () => {
         try {
-            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/ventas/actualizar/${producto._id}`, {
+            await axios.put(`${import.meta.env.VITE_BACKEND_URL}/ventas/actualizar/${producto._id}`, {
                 cliente: auth.userId,
                 cantidad: cantidad
             });
@@ -104,7 +117,6 @@ export const CatalogoCajero = () => {
                 item._id === producto._id ? { ...item, cantidad: cantidad } : item
             );
             setCartItems(updatedCartItems);
-            localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
             setMensajeConfirmacion('Producto actualizado con éxito');
             setTipoMensaje(true); 
             setTimeout(() => {
@@ -306,3 +318,5 @@ export const CatalogoCajero = () => {
     )}
     </>
 )}
+
+export default CatalogoCajero;

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FaArrowLeft, FaTrash } from 'react-icons/fa';
-import { useWindowWidth } from '../hooks/useWindowWidth'
+import { useWindowWidth } from '../hooks/useWindowWidth';
 
 const CarritoDeVentas = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -33,12 +33,14 @@ const CarritoDeVentas = () => {
                 const ventasId = Object.keys(ventas)[0];
                 const productos = ventas[ventasId];
                 setVentasId(ventasId);
-                setCartItems(productos.filter(item => item.Producto));
+                const filteredProducts = productos.filter(item => item.Producto);
+                setCartItems(filteredProducts);
+                localStorage.setItem('cartItems', JSON.stringify(filteredProducts));
             } else {
                 showMessage('No se pudo obtener la información de ventas.', false);
             }
         } catch (error) {
-            showMessage(error.response?.data?.message || 'Error al listar los productos de la venta', false);
+            showMessage(error.response?.data?.message || 'No se esta realizando ninguna venta', false);
         }
     };
 
@@ -53,7 +55,9 @@ const CarritoDeVentas = () => {
                 data: { cliente: userId },
             });
             showMessage(response.data.message, true);
-            listarProductosVentas();
+            const updatedCartItems = cartItems.filter(item => item.idProducto !== producto.idProducto);
+            setCartItems(updatedCartItems);
+            localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
         } catch (error) {
             showMessage(error.response?.data?.message || 'Error al borrar el producto de la venta', false);
             console.error(error.response ? error.response.data : error.message);
@@ -71,7 +75,8 @@ const CarritoDeVentas = () => {
                 data: { cliente: userId },
             });
             showMessage(response.data.message, true);
-            listarProductosVentas();
+            setCartItems([]);
+            localStorage.removeItem('cartItems');
         } catch (error) {
             showMessage(error.response?.data?.message || 'Error al borrar la venta', false);
             console.error(error.response ? error.response.data : error.message);
@@ -115,6 +120,7 @@ const CarritoDeVentas = () => {
 
                 setFactura(factura);
                 setMostrarFactura(true);
+                localStorage.removeItem('cartItems');
             } else {
                 showMessage('No se pudo obtener la información del pedido.', false);
             }
@@ -171,7 +177,7 @@ const CarritoDeVentas = () => {
                                     <span style={styles.column}>{producto.Producto}</span>
                                     <span style={styles.column}><img src={producto.imagen} alt="Imagen del Producto" className="w-20 h-20 object-cover" /></span>
                                     <span style={styles.column}>{producto.Cantidad}</span>
-                                    <span style={styles.column}>{producto.Precio}</span>
+                                    <span style={styles.column}>{producto.Precio.toFixed(2)}</span>
                                     <div style={styles.buttons}>
                                         <button
                                             style={{ ...styles.button, ...styles.deleteButton }}
@@ -249,14 +255,12 @@ const CarritoDeVentas = () => {
                 </Modal>
             )}
         </div>
-    ): (
-        <>
-            <div style={{ alignContent: 'center', margin: '0 100px 5% 100px', background: 'red', border: '40px solid red' }}>
-                <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
-                <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg " alt="movil" className="center" />
-            </div>
-        </>
-    )
+    ) : (
+        <div style={{ alignContent: 'center', margin: '0 100px 5% 100px', background: 'red', border: '40px solid red' }}>
+            <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
+            <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg" alt="movil" className="center" />
+        </div>
+    );
 };
 
 const styles = {

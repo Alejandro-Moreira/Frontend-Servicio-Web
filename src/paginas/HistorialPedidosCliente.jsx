@@ -7,6 +7,7 @@ import Mensaje from '../componets/Alertas/Mensaje';
 import Modal from 'react-modal';
 import { SearchInput } from './Barrabusqueda';
 import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const HistorialPedidos = () => {
   const { auth } = useContext(AuthContext);
@@ -115,30 +116,46 @@ const HistorialPedidos = () => {
 
   const downloadPDF = () => {
     const doc = new jsPDF();
-    doc.text("Detalles de la Venta", 20, 20);
-    doc.text(`ID: ${pedidoDetalles._id}`, 20, 30);
-    doc.text(`Cliente: ${pedidoDetalles.nombre}`, 20, 40);
-    doc.text(`Dirección: ${pedidoDetalles.direccion}`, 20, 50);
-    doc.text(`Total: $${pedidoDetalles.total}`, 20, 60);
-    doc.text(`Fecha: ${new Date(pedidoDetalles.fecha).toLocaleDateString()}`, 20, 70);
-    doc.text(`Estado: ${pedidoDetalles.estado}`, 20, 80);
 
-    let startY = 90;
-    doc.text("Productos:", 20, startY);
-    startY += 10;
-    pedidoDetalles.producto.forEach((producto, index) => {
-      doc.text(`Producto: ${producto}`, 20, startY + (index * 10));
-      doc.text(`Cantidad: ${pedidoDetalles.cantidad[index]}`, 70, startY + (index * 10));
-      doc.text(`Precio: $${pedidoDetalles.precio[index].toFixed(2)}`, 110, startY + (index * 10));
-      doc.text(`Total: $${(pedidoDetalles.precio[index] * pedidoDetalles.cantidad[index]).toFixed(2)}`, 150, startY + (index * 10));
+    // Encabezado
+    doc.setFontSize(20);
+    doc.text("Factura", 105, 20, null, null, 'center');
+    doc.setFontSize(20);
+    doc.text("Minimarket 'Mika y Vale'", 105, 30, null, null, 'center');
+
+    // Datos de la factura
+    doc.setFontSize(13);
+    doc.text(`ID: ${pedidoDetalles._id}`, 20, 50);
+    doc.text(`Cliente: ${pedidoDetalles.nombre}`, 20, 60);
+    doc.text(`Dirección: ${pedidoDetalles.direccion}`, 20, 70);
+    doc.text(`Fecha: ${new Date(pedidoDetalles.fecha).toLocaleDateString()}`, 20, 80);
+    
+    // Tabla de productos
+    const products = pedidoDetalles.producto.map((producto, index) => [
+      producto,
+      pedidoDetalles.cantidad[index],
+      `$${pedidoDetalles.precio[index].toFixed(2)}`,
+      `$${(pedidoDetalles.precio[index] * pedidoDetalles.cantidad[index]).toFixed(2)}`
+    ]);
+
+    doc.autoTable({
+      head: [['Producto', 'Cantidad', 'Precio Unidad', 'Total']],
+      body: products,
+      startY: 100,
+      theme: 'grid',
+      headStyles: { fillColor: [60, 141, 188] },
+      styles: { halign: 'center' },
+      columnStyles: { 0: { halign: 'left' }, 3: { halign: 'right' } }
     });
 
-    startY += pedidoDetalles.producto.length * 10 + 10;
-    doc.text(`Subtotal: $${subtotal(pedidoDetalles.comision, pedidoDetalles.total).toFixed(2)}`, 20, startY);
-    doc.text(`Comisión: $${obtenerComision(pedidoDetalles.comision).toFixed(2)}`, 20, startY + 10);
-    doc.text(`Total: $${pedidoDetalles.total.toFixed(2)}`, 20, startY + 20);
+    // Totales
+    let finalY = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(10);
+    doc.text(`Subtotal: $${subtotal(pedidoDetalles.comision, pedidoDetalles.total).toFixed(2)}`, 170, finalY);
+    doc.text(`Comisión: $${obtenerComision(pedidoDetalles.comision).toFixed(2)}`, 170, finalY + 10);
+    doc.text(`Total: $${pedidoDetalles.total.toFixed(2)}`, 170, finalY + 20);
 
-    doc.save("factura.pdf");
+    doc.save("Factura.pdf");
   };
 
   return (
@@ -212,7 +229,6 @@ const HistorialPedidos = () => {
             <p><strong>ID:</strong> {pedidoDetalles._id}</p>
             <p><strong>Cliente:</strong> {pedidoDetalles.nombre}</p>
             <p><strong>Dirección:</strong> {pedidoDetalles.direccion}</p>
-            <p><strong>Total:</strong> ${pedidoDetalles.total}</p>
             <p><strong>Fecha:</strong> {new Date(pedidoDetalles.fecha).toLocaleDateString()}</p>
             <p><strong>Estado:</strong> {pedidoDetalles.estado}</p>
             <table style={styles.facturaTable}>

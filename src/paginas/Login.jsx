@@ -3,7 +3,7 @@ import { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Mensaje from '../componets/Alertas/Mensaje';
 import AuthContext from '../context/AuthProvider';
-import { useWindowWidth } from '../hooks/useWindowWidth'
+import { useWindowWidth } from '../hooks/useWindowWidth';
 
 const Login = () => {
     const windowWidth = useWindowWidth();
@@ -30,11 +30,11 @@ const Login = () => {
         try {
             const respuesta = await axios.post(url, form);
             if (respuesta.status === 200) {
-                let rol = ''
+                let rol = '';
                 const { message, userId } = respuesta.data;
                 console.log('User ID from backend:', userId);
                 if (message === 'Cajero Autenticado Correctamente') {
-                    rol = 'cajero'
+                    rol = 'cajero';
                 } else {
                     rol = form.email === 'mikayvale2024@outlook.com' ? 'admin' : 'cliente';
                 }
@@ -51,9 +51,9 @@ const Login = () => {
                 if (rol === 'admin') {
                     navigate('/dashboard');
                 } else if (rol === 'cliente') {
-                    navigate('/catalogo')
+                    navigate('/catalogo');
                 } else {
-                    navigate('/catalogo-cajero')
+                    navigate('/catalogo-cajero');
                 }
 
             } else {
@@ -61,7 +61,8 @@ const Login = () => {
                 setForm({ email: "", password: "" });
             }
         } catch (error) {
-            setMensaje({ respuesta: error.response?.data?.msg || 'Error en la solicitud', tipo: false });
+            const errorMsg = error.response?.data?.msg || error.response?.data?.message || 'Error en la solicitud';
+            setMensaje({ respuesta: errorMsg, tipo: false });
             setForm({ email: "", password: "" });
             setTimeout(() => setMensaje({}), 3000);
         }
@@ -126,13 +127,13 @@ const Login = () => {
             </div>
         </>
     ) : (
-            <>
-                <div style={{ alignContent: 'center', margin: '0 100px 5% 100px', background: 'red', border: '40px solid red' }}>
-                    <h1 className='text-5xl py-2  text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
-                    <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg " alt="movil" className="center" />
-                </div>
-            </>
-    )
+        <>
+            <div style={{ alignContent: 'center', margin: '0 100px 5% 100px', background: 'red', border: '40px solid red' }}>
+                <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
+                <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg" alt="movil" className="center" />
+            </div>
+        </>
+    );
 };
 
 export default Login;

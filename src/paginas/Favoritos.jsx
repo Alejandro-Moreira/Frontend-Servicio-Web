@@ -5,9 +5,8 @@ import AuthContext from '../context/AuthProvider';
 import { FaTrashAlt, FaArrowLeft, FaShoppingCart, FaHistory, FaBars, FaTimes, FaHeart } from 'react-icons/fa';
 import Modal from 'react-modal';
 import ModalCarrito from '../componets/Modals/ModalCarrito';
-import CategoryList from './CategoriaCliente';
+import FavoriteCategoryList from './CategoryListFav'; // Importa el nuevo componente
 import { SearchInput } from './Barrabusqueda';
-import Mensaje from '../componets/Alertas/Mensaje';
 
 Modal.setAppElement('#root');
 
@@ -22,6 +21,7 @@ export const Favoritos = () => {
     const [producto, setProducto] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchValue, setSearchValue] = useState('');
+    const [categoriasFavoritas, setCategoriasFavoritas] = useState([]);
     const { auth } = useContext(AuthContext);
     const baseUrl = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
@@ -36,6 +36,11 @@ export const Favoritos = () => {
                 } else {
                     setFavoritos(response.data);
                     setFilteredFavoritos(response.data);
+
+                    // Extraer las categorías de los productos favoritos
+                    const categorias = response.data.map(favorito => favorito.categoria);
+                    const categoriasUnicas = [...new Set(categorias)];
+                    setCategoriasFavoritas(categoriasUnicas);
                 }
             } catch (error) {
                 console.error('Error al obtener favoritos:', error);
@@ -150,7 +155,7 @@ export const Favoritos = () => {
 
             {isMenuOpen && (
                 <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
-                    <CategoryList onCategorySelect={handleCategorySelect} />
+                    <FavoriteCategoryList onCategorySelect={handleCategorySelect} categoriasFavoritas={categoriasFavoritas} />
                 </section>
             )}
 

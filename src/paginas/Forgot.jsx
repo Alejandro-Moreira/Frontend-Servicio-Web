@@ -20,11 +20,13 @@ export const Forgot = () => {
         e.preventDefault()
 
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/login/recuperar-password/:token`
+            const url = `${import.meta.env.VITE_BACKEND_URL}/login/recuperar-password`
             const respuesta = await axios.post(url, mail)
             setMensaje({ respuesta: respuesta.data.msg, tipo: true })
             setMail("")
-            navigate('/restablecer');
+            setTimeout(() => {
+                navigate('/login');
+            }, 3000);
         } catch (error) {
             setMensaje({ respuesta: error.response.data.msg, tipo: false })
         }

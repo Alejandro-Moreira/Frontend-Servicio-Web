@@ -60,15 +60,17 @@ const HistorialPedidos = () => {
     try {
       const userId = localStorage.getItem('userId');
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ventas/cliente/${pedido._id}?cliente=${userId}`);
-      if (response.status === 200) {
-        setPedidoDetalles(response.data);
-        setModalIsOpen(true);
-      } else {
-        setError('Error al obtener los detalles del pedido');
+      if (pedido.estado === 'En espera') {
+        pedido.estado = 'En preparación'
+        setPedidoDetalles(pedido);
+        setPedidos(prevPedidos => prevPedidos.map(p => p._id === pedido._id ? { ...p, estado: 'En preparación' } : p));
+      }else{
+        setPedidoDetalles(pedido);
       }
+      setModalIsOpen(true);
     } catch (error) {
-      setError('Error al obtener los detalles del pedido');
-      console.error('Error al obtener los detalles del pedido', error);
+      setError('Error al obtener los productos');
+      console.error('Error al obtener los productos', error);
     }
   };
 
@@ -121,6 +123,16 @@ const HistorialPedidos = () => {
     }
   };
 
+  const obtenerComision = (comision) => {
+    if (comision) return 0.5;
+    else return 0;
+  };
+
+  const subtotal = (comision, total) => {
+    if (comision) return total - 0.5;
+    else return total;
+  };
+
   if (error) return <Mensaje tipo="error">{error}</Mensaje>;
 
   return (
@@ -136,7 +148,7 @@ const HistorialPedidos = () => {
           value={searchValue}
           onChange={onSearchValue}
           className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          style={{ width : '400px'}}
+          style={{ width: '400px' }}
         />
         <FaSearch className="ml-3 text-gray-500" />
       </div>
@@ -165,7 +177,7 @@ const HistorialPedidos = () => {
                 <td className='p-2'>{pedido.direccion}</td>
                 <td className='p-2'>{pedido.estado}</td>
                 <td className='p-2'>
-                  <button
+                <button
                     className="bg-gray-500 text-white px-3 py-1 rounded mr-2"
                     onClick={() => handleViewPedidos(pedido)}
                   >
@@ -223,7 +235,11 @@ const HistorialPedidos = () => {
               <tfoot>
                 <tr>
                   <td colSpan="3" style={styles.facturaTableTd}>Subtotal</td>
-                  <td style={styles.facturaTableTd}>${pedidoDetalles.total.toFixed(2)}</td>
+                  <td style={styles.facturaTableTd}>${subtotal(pedidoDetalles.comision, pedidoDetalles.total).toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td colSpan="3" style={styles.facturaTableTd}>Comisión</td>
+                  <td style={styles.facturaTableTd}>${obtenerComision(pedidoDetalles.comision).toFixed(2)}</td>
                 </tr>
                 <tr>
                   <td colSpan="3" style={styles.facturaTableTd}><strong>Total</strong></td>
