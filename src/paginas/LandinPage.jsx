@@ -111,16 +111,16 @@ export const LandinPage = () => {
                     </h2>
                     <div className='flex space-x-4 items-center'>
                         <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
-                        <button onClick={toggleMenu} className="text-teal-600">
+                        <button onClick={toggleMenu} className="categorias text-teal-600">
                             {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
                         </button>
-                        <Link to="/login" className="text-teal-600">
+                        <Link to="/login" className="carrito text-teal-600">
                             <FaShoppingCart size={30} />
                         </Link>
-                        <Link to="/login" className="text-teal-600">
+                        <Link to="/login" className="favoritos text-teal-600">
                             <FaHeart size={30} />
                         </Link>
-                        <Link to="/login" className="text-teal-600">
+                        <Link to="/login" className="login text-teal-600">
                             <FaStore size={30} />
                         </Link>
                     </div>
@@ -131,7 +131,7 @@ export const LandinPage = () => {
 
 
             {isMenuOpen && (
-                <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
+                <section className="categorias bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
                     <CategoryList onCategorySelect={handleCategorySelect} />
                 </section>
             )}

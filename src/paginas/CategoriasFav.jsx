@@ -119,7 +119,7 @@ const CategoriasFav = () => {
         <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos Favoritos - {categoryName}</h2>
         <div className='flex space-x-4 items-center'>
           <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
-          <button onClick={() => navigate(-1)} className="text-teal-600">
+          <button onClick={() => navigate(-1)} className="regresar text-teal-600">
             <FaArrowLeft size={30} />
           </button>
         </div>
@@ -146,7 +146,7 @@ const CategoriasFav = () => {
                   <p className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</p>
                   <button
                     onClick={() => handleAddToCartClick(producto)}
-                    className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800"
+                    className="añadir-carrito bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800"
                   >
                     {isInCart(producto._id) ? 'Actualizar carrito' : 'Añadir al carrito'}
                   </button>
@@ -170,7 +170,7 @@ const CategoriasFav = () => {
             max="20"
             className="border p-2 rounded"
           />
-          <button onClick={addToCart} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
+          <button onClick={addToCart} className="agregar-o-actualizar bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
             {isInCart(producto?._id) ? 'Actualizar' : 'Agregar'}
           </button>
         </ModalCarrito>

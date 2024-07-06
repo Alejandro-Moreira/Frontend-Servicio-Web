@@ -164,16 +164,16 @@ const HistorialPedidos = () => {
         <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Historial de Pedidos</h2>
         <div className='flex space-x-4 items-center'>
           <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
-          <button onClick={() => navigate(-1)} className="text-teal-600">
+          <button onClick={() => navigate(-1)} className="regresar text-teal-600">
             <FaArrowLeft size={30} />
           </button>
-          <button onClick={() => navigate('/carrito-compra')} className="text-teal-600">
+          <button onClick={() => navigate('/carrito-compra')} className="carrito text-teal-600">
             <FaShoppingCart size={30} />
           </button>
-          <button onClick={() => navigate('/categorias')} className="text-teal-600">
+          <button onClick={() => navigate('/categorias')} className="categorias text-teal-600">
             <FaList size={30} />
           </button>
-          <button onClick={() => navigate('/favoritos')} className="text-teal-600">
+          <button onClick={() => navigate('/favoritos')} className="favoritos text-teal-600">
             <FaHeart size={30} />
           </button>
         </div>

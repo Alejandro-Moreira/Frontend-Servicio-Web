@@ -59,7 +59,7 @@ const CategoryList = () => {
     const userRole = localStorage.getItem('rol');
     if (userRole === 'cliente') {
       return (
-        <button onClick={favoritosLogin} className="text-teal-600">
+        <button onClick={favoritosLogin} className="favoritos text-teal-600">
           <FaHeart size={30} />
         </button>
       );
@@ -72,7 +72,7 @@ const CategoryList = () => {
       <div className="flex items-center mb-5">
         <h2 className="font-black text-4xl text-teal-600 mr-4">Categorías</h2>
         <div className="flex space-x-4">
-          <button onClick={CarritosLogin} className="text-teal-600">
+          <button onClick={CarritosLogin} className="carrito text-teal-600">
             <FaShoppingCart size={30} />
           </button>
           {renderFavoritosIcon()}
