@@ -65,6 +65,7 @@ const CrearCategoria = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='Nombre de la categoría'
                     name='nombreCategoria'
+                    maxLength="30"
                     value={nombreCategoria}
                     onChange={handleChange}
                 />

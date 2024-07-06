@@ -61,42 +61,48 @@ export const Register = () => {
                             <label className="mb-2 block text-sm font-semibold" htmlFor="nombre">Nombre:</label>
                             <input type="text" id="nombre" name='nombre'
                                 value={form.nombre} onChange={handleChange}
-                                placeholder="Ingresa tu nombre" className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
+                                placeholder="Ingresa tu nombre" maxLength="30"
+                                className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
                         </div>
 
                         <div className="mb-3">
                             <label className="mb-2 block text-sm font-semibold" htmlFor="apellido">Apellido:</label>
                             <input type="text" id="apellido" name='apellido'
                                 value={form.apellido} onChange={handleChange}
-                                placeholder="Ingresa tu apellido" className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
+                                placeholder="Ingresa tu apellido" maxLength="30"
+                                className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
                         </div>
 
                         <div className="mb-3">
                             <label className="mb-2 block text-sm font-semibold" htmlFor="direccion">Dirección</label>
                             <input type="text" id="direccion" name='direccion'
                                 value={form.direccion} onChange={handleChange}
-                                placeholder="Ingresa tu dirección" className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
+                                placeholder="Ingresa tu dirección" maxLength="30"
+                                className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
                         </div>
 
                         <div className="mb-3">
                             <label className="mb-2 block text-sm font-semibold" htmlFor="telefono">Teléfono:</label>
                             <input type="tel" id="telefono" name='telefono'
                                 value={form.telefono} onChange={handleChange}
-                                placeholder="Ingresa tu teléfono" className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
+                                placeholder="Ingresa tu teléfono" maxLength="10"
+                                className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
                         </div>
 
                         <div className="mb-3">
                             <label className="mb-2 block text-sm font-semibold" htmlFor="email">Email:</label>
                             <input type="email" id="email" name='email'
                                 value={form.email} onChange={handleChange}
-                                placeholder="Ingresa tu email" className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
+                                placeholder="Ingresa tu email" maxLength="30"
+                                className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
                         </div>
 
                         <div className="mb-3">
                             <label className="mb-2 block text-sm font-semibold" htmlFor="password">Contraseña:</label>
                             <input type="password" id="password" name='password'
                                 value={form.password} onChange={handleChange}
-                                placeholder="*****************" className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
+                                placeholder="*****************" maxLength="30"
+                                className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
                         </div>
 
                         <div className="mb-3">

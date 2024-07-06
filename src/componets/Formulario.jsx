@@ -106,6 +106,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='Nombre del producto'
                     name='nombre'
+                    maxLength="30"
                     value={form.nombre}
                     onChange={handleChange}
                 />
@@ -116,6 +117,7 @@ export const Formulario = () => {
                     id='categoria'
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     name='categoria'
+                    maxLength="30"
                     value={form.categoria}
                     onChange={handleChange}
                 >
@@ -133,6 +135,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='Precio del producto'
                     name='precio'
+                    maxLength="5"
                     value={form.precio}
                     onChange={handleChange}
                 />
@@ -145,6 +148,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='Cantidad del producto'
                     name='cantidad'
+                    maxLength="3"
                     value={form.cantidad}
                     onChange={handleChange}
                 />

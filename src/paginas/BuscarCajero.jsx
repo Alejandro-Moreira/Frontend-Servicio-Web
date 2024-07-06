@@ -37,6 +37,7 @@ const BuscarCajero = () => {
         value={cajeroId}
         onChange={(e) => setCajeroId(e.target.value)}
         placeholder="ID del cajero"
+        maxLength="30"
       />
       <button onClick={handleBuscar}>Buscar</button>
       {cajero && (

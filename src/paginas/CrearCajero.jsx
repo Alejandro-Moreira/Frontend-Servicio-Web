@@ -77,6 +77,7 @@ const CrearCajero = () => {
           className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
           placeholder='Nombre de usuario'
           name='username'
+          maxLength="30"
           value={form.username}
           onChange={handleChange}
         />
@@ -89,6 +90,7 @@ const CrearCajero = () => {
           className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
           placeholder='Teléfono'
           name='telefono'
+          maxLength="10"
           value={form.telefono}
           onChange={handleChange}
         />
@@ -101,6 +103,7 @@ const CrearCajero = () => {
           className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
           placeholder='Correo electrónico'
           name='email'
+          maxLength="30"
           value={form.email}
           onChange={handleChange}
         />
@@ -113,6 +116,7 @@ const CrearCajero = () => {
           className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
           placeholder='Contraseña'
           name='password'
+          maxLength="30"
           value={form.password}
           onChange={handleChange}
         />

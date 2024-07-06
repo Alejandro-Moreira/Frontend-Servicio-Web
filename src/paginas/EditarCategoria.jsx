@@ -66,6 +66,7 @@ const EditarCategoria = () => {
           className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
           placeholder='ID de la categoría'
           name='categoriaId'
+          maxLength="30"
           value={id}
           disabled
         />
@@ -78,6 +79,7 @@ const EditarCategoria = () => {
           className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
           placeholder='Nuevo nombre de la categoría'
           name='nombreCategoria'
+          maxLength="30"
           value={nombreCategoria}
           onChange={handleChange}
         />

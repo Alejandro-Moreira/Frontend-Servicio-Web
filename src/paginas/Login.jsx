@@ -94,6 +94,7 @@ const Login = () => {
                                 value={form.email}
                                 onChange={handleChange}
                                 placeholder="Ingresa tu email"
+                                maxLength="30"
                                 className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-2 text-gray-500"
                             />
                         </div>
@@ -106,6 +107,7 @@ const Login = () => {
                                 value={form.password}
                                 onChange={handleChange}
                                 placeholder="*************"
+                                maxLength="30"
                                 className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-2 text-gray-500"
                             />
                         </div>

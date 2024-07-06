@@ -106,6 +106,7 @@ const ListarCategorias = () => {
           placeholder="Buscar por nombre"
           value={searchValue}
           onChange={onSearchValue}
+          maxLength="30"
           className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           style={{ width: '400px' }}
         />
@@ -163,6 +164,7 @@ const ListarCategorias = () => {
             placeholder="Buscar por nombre de producto"
             value={productSearchValue}
             onChange={onProductSearchValue}
+            maxLength="30"
             className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
           <FaSearch className="ml-3 text-gray-500" />

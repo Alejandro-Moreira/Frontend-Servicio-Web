@@ -8,6 +8,7 @@ export const SearchInput = ({ searchValue, onSearch }) => {
             onChange={onSearch}
             placeholder="Buscar"
             className="border p-2 rounded"
+            maxLength="30"
             style={{ width: '450px', textAlign: 'center' }}
         />
     );

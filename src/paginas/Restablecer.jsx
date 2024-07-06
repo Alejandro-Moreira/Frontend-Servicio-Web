@@ -70,12 +70,14 @@ const Restablecer = () => {
                         <input type="password" placeholder="Enter your password" className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-1.5 text-gray-500"
                             value={form.password || ""}
                             name='password'
+                            maxLength="30"
                             onChange={handleChange}
                         />
                         <label className="mb-2 block text-sm font-semibold">Confirmar contraseña</label>
                         <input type="password" placeholder="Repeat your password" className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-1.5 text-gray-500"
                             value={form.confirmpassword || ""}
                             name='confirmpassword'
+                            maxLength="30"
                             onChange={handleChange}
                         />
                     </div>

@@ -139,6 +139,7 @@ const ActualizarCajero = () => {
           placeholder='Correo electrónico'
           name='email'
           value={form.email}
+          maxLength="30"
           onChange={handleChange}
           disabled={loading}
         />
@@ -152,6 +153,7 @@ const ActualizarCajero = () => {
           placeholder='Teléfono'
           name='telefono'
           value={form.telefono}
+          maxLength="10"
           onChange={handleChange}
           disabled={loading}
         />
@@ -165,6 +167,7 @@ const ActualizarCajero = () => {
           placeholder='Nombre de usuario'
           name='username'
           value={form.username}
+          maxLength="30"
           onChange={handleChange}
           disabled={loading}
         />
@@ -178,6 +181,7 @@ const ActualizarCajero = () => {
           placeholder='Contraseña'
           name='password'
           value={form.password}
+          maxLength="30"
           onChange={handleChange}
           disabled={loading}
         />

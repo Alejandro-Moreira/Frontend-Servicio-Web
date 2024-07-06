@@ -147,6 +147,7 @@ const HistorialPedidos = () => {
           placeholder="Buscar por cliente, fecha, dirección o estado..."
           value={searchValue}
           onChange={onSearchValue}
+          maxLength="30"
           className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           style={{ width: '400px' }}
         />

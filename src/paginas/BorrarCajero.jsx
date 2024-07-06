@@ -51,6 +51,7 @@ const BorrarCajero = () => {
           placeholder='Email del cajero'
           name='email'
           value={email}
+          maxLength="30"
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
