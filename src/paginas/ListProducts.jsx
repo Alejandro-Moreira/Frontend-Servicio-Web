@@ -117,7 +117,7 @@ const ListProducts = () => {
         <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos</h2>
         <div className='flex space-x-4 items-center'>
           <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
-          <button onClick={() => navigate(-1)} className="regresar text-teal-600">
+          <button onClick={() => navigate(-1)} className="text-teal-600">
             <FaArrowLeft size={30} />
           </button>
         </div>

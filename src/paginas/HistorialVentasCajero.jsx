@@ -101,13 +101,13 @@ const HistorialVentas = () => {
           <section>
             <div className='flex justify-between items-center'>
                 <div className='flex space-x-4 items-center'>
-                    <Link to="/carrito-ventas" className="carrito text-teal-600">
+                    <Link to="/carrito-ventas" className="text-teal-600">
                         <FaShoppingCart size={30} />
                     </Link>
-                    <Link to="/historial-ventas-cajeros" className="historial-ventas text-teal-600"> 
+                    <Link to="/historial-ventas-cajeros" className="text-teal-600"> 
                         <FaFileInvoice size={30} /> 
                     </Link>
-                    <Link to="/historial-pedidos-cajeros" className="historial-pedidos text-teal-600"> 
+                    <Link to="/historial-pedidos-cajeros" className="text-teal-600"> 
                         <FaCalendarCheck size={30} /> 
                     </Link>
                 </div>
@@ -116,7 +116,7 @@ const HistorialVentas = () => {
         </div>
       </div>
       <div className="flex items-center mb-5">
-        <button onClick={() => navigate(-1)} className="regresar text-teal-600 mr-3">
+        <button onClick={() => navigate(-1)} className="text-teal-600 mr-3">
           <FaArrowLeft size={30} />
         </button>
         <input

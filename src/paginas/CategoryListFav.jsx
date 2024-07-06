@@ -54,11 +54,11 @@ const FavoriteCategoryList = ({ categoriasFavoritas, onCategorySelect }) => {
       <div className="flex items-center mb-5">
         <h2 className="font-black text-4xl text-teal-600 mr-4">Categorías Favoritas</h2>
         <div className="flex space-x-4">
-          <button onClick={CarritosLogin} className="carrito text-teal-600">
+          <button onClick={CarritosLogin} className="text-teal-600">
             <FaShoppingCart size={30} />
           </button>
           {renderFavoritosIcon()}
-          <button onClick={HistorialLogin} className="historial text-teal-600">
+          <button onClick={HistorialLogin} className="text-teal-600">
             <FaHistory size={30} />
           </button>
         </div>

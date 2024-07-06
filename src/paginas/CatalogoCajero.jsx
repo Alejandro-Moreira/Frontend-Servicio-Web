@@ -194,22 +194,22 @@ export const CatalogoCajero = () => {
                     <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos Disponibles</h2>
                     <div className='flex space-x-4 items-center'>
                         <SearchInput searchValue={searchValue} onSearch={onSearchValue}/>
-                        <button onClick={toggleMenu} className="barra-de-busqueda text-teal-600">
+                        <button onClick={toggleMenu} className="text-teal-600">
                             {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
                         </button>
-                        <Link to="/carrito-ventas" className="carrito text-teal-600">
+                        <Link to="/carrito-ventas" className="text-teal-600">
                             <FaShoppingCart size={30} />
                         </Link>
-                        <Link to="/historial-ventas" className="historial-ventas text-teal-600">
+                        <Link to="/historial-ventas" className="text-teal-600">
                             <FaHistory size={30} /> 
                         </Link>
-                        <Link to="/historial-ventas-cajeros" className="historial-ventas-cajeros text-teal-600"> 
+                        <Link to="/historial-ventas-cajeros" className="text-teal-600"> 
                             <FaFileInvoice size={30} /> 
                         </Link>
-                        <Link to="/historial-pedidos-cajeros" className="historial-pedidos-cajeros text-teal-600"> 
+                        <Link to="/historial-pedidos-cajeros" className="text-teal-600"> 
                             <FaCalendarCheck size={30} /> 
                         </Link>
-                        <button onClick={() => navigate('/cerrar-sesion')} className="salir text-teal-600">
+                        <button onClick={() => navigate('/cerrar-sesion')} className="text-teal-600">
                             <FaSignOutAlt size={30} />
                         </button>
                     </div>
@@ -217,7 +217,7 @@ export const CatalogoCajero = () => {
             </section>
             <p className='text-slate-900 my-4 text-2xl text-right'>Bienvenido - {auth?.nombre}</p>
             {isMenuOpen && (
-                <section className="categorias bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
+                <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
                     <CategoryList onCategorySelect={handleCategorySelect} />
                 </section>
             )}
@@ -238,9 +238,9 @@ export const CatalogoCajero = () => {
                                 <p className='text-gray-800 py-1'>{producto.categoria}</p>
                                 <p className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</p>
                                 {isInCart(producto._id) ? (
-                                    <button onClick={() => handleUpdateCartClick(producto)} className="actualizar-carrito bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
+                                    <button onClick={() => handleUpdateCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
                                 ) : (
-                                    <button onClick={() => handleAddToCartClick(producto)} className="añadir-carrito bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
+                                    <button onClick={() => handleAddToCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
                                 )}
                             </div>
                         </div>

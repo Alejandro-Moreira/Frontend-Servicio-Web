@@ -229,16 +229,16 @@ export const Catalogo = () => {
                         <button onClick={toggleMenu} className="text-teal-600">
                             {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
                         </button>
-                        <Link to="/carrito-compra" className="carrito text-teal-600">
+                        <Link to="/carrito-compra" className="text-teal-600">
                             <FaShoppingCart size={30} />
                         </Link>
-                        <Link to="/favoritos" className="favoritos text-teal-600">
+                        <Link to="/favoritos" className="text-teal-600">
                             <FaHeart size={30} />
                         </Link>
-                        <Link to="/historial-pedidos" className="historial text-teal-600"> 
+                        <Link to="/historial-pedidos" className="text-teal-600"> 
                             <FaHistory size={30} /> 
                         </Link>
-                        <button onClick={() => navigate('/cerrar-sesion')} className="salir text-teal-600">
+                        <button onClick={() => navigate('/cerrar-sesion')} className="text-teal-600">
                             <FaSignOutAlt size={30} />
                         </button>
                     </div>
@@ -247,7 +247,7 @@ export const Catalogo = () => {
             <p className='text-slate-900 my-4 text-2xl text-right'>Bienvenido - {auth?.nombre}</p>
 
             {isMenuOpen && (
-                <section className="salir bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
+                <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
                     <CategoryList onCategorySelect={handleCategorySelect} /> {/* Pasa la función como prop */}
                 </section>
             )}
@@ -269,14 +269,14 @@ export const Catalogo = () => {
                                 <p className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</p>
                                 {isInCart(producto._id) ? (
                                     <>
-                                        <button onClick={() => handleUpdateCartClick(producto)} className="actualizar-carrito bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
+                                        <button onClick={() => handleUpdateCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
                                     </>
                                 ) : (
                                     <>
-                                        <button onClick={() => handleAddToCartClick(producto)} className="añadir-carrito bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
+                                        <button onClick={() => handleAddToCartClick(producto)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
                                     </>
                                 )}
-                                <button onClick={() => addToFavorites(producto)} className="añadir-favoritos bg-red-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-red-800">
+                                <button onClick={() => addToFavorites(producto)} className="bg-red-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-red-800">
                                     <FaHeart size={20} /> 
                                 </button>
                             </div>

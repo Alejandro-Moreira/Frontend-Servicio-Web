@@ -138,29 +138,29 @@ export const Favoritos = () => {
                 <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Favoritos</h2>
                 <div className='flex space-x-4 items-center'>
                     <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
-                    <button onClick={() => navigate(-1)} className="regresar text-teal-600">
+                    <button onClick={() => navigate(-1)} className="text-teal-600">
                         <FaArrowLeft size={30} />
                     </button>
-                    <button onClick={() => navigate('/carrito-compra')} className="carrito text-teal-600">
+                    <button onClick={() => navigate('/carrito-compra')} className="text-teal-600">
                         <FaShoppingCart size={30} />
                     </button>
-                    <button onClick={toggleMenu} className="categorias text-teal-600">
+                    <button onClick={toggleMenu} className="text-teal-600">
                         {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
                     </button>
-                    <button onClick={() => navigate('/historial-pedidos')} className="historial text-teal-600">
+                    <button onClick={() => navigate('/historial-pedidos')} className="text-teal-600">
                         <FaHistory size={30} />
                     </button>
                 </div>
             </section>
 
             {isMenuOpen && (
-                <section className="lista-favoritos bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
+                <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
                     <FavoriteCategoryList onCategorySelect={handleCategorySelect} categoriasFavoritas={categoriasFavoritas} />
                 </section>
             )}
 
             {mensaje && (
-                <div className="favoritos bg-red-500 text-white px-4 py-2 rounded mt-4">
+                <div className="bg-red-500 text-white px-4 py-2 rounded mt-4">
                     {mensaje}
                 </div>
             )}
@@ -187,7 +187,7 @@ export const Favoritos = () => {
                                 {!isInCart(favorito._id) && (
                                     <button onClick={() => handleAddToCartClick(favorito)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
                                 )}
-                                <button onClick={() => BorrarFavoritos(favorito._id)} className="borrar text-teal-600 ml-4">
+                                <button onClick={() => BorrarFavoritos(favorito._id)} className="text-teal-600 ml-4">
                                     <FaTrashAlt size={20} /> 
                                 </button>
                             </div>
@@ -208,7 +208,7 @@ export const Favoritos = () => {
                         max="20" 
                         className="border p-2 rounded"
                     />
-                    <button onClick={addToCart} className="agregar-carro bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
+                    <button onClick={addToCart} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">
                         Agregar
                     </button>
                 </ModalCarrito>
