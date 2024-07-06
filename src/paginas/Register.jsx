@@ -93,7 +93,7 @@ export const Register = () => {
                             <label className="mb-2 block text-sm font-semibold" htmlFor="email">Email:</label>
                             <input type="email" id="email" name='email'
                                 value={form.email} onChange={handleChange}
-                                placeholder="Ingresa tu email" maxLength="30"
+                                placeholder="Ingresa tu email" maxLength="40"
                                 className="block w-full rounded-md border border-gray-300 focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-700 py-1 px-1.5 text-gray-500" required />
                         </div>
 

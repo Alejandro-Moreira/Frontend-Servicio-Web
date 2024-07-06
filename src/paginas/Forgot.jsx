@@ -48,7 +48,7 @@ export const Forgot = () => {
                                 name='email'
                                 onChange={handleChange}
                                 placeholder="Ingresa tu email"
-                                maxLength="30"
+                                maxLength="40"
                                 className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-1.5 text-gray-500"
                             />
                         </div>
