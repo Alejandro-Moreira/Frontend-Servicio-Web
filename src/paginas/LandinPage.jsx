@@ -2,16 +2,16 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
-import { FaShoppingCart, FaHeart, FaStore, FaBars, FaTimes } from 'react-icons/fa';
-import Modal from 'react-modal'; 
+import { FaShoppingCart, FaHeart, FaStore, FaBars, FaTimes, FaSpinner } from 'react-icons/fa';
+import Modal from 'react-modal';
 import ModalCarrito from '../componets/Modals/ModalCarrito';
 import { SearchInput } from './Barrabusqueda';
 import { getProductosListar } from "./../services/getProductosListar";
 import CategoryList from './CategoriaCliente';
 import Mensaje from '../componets/Alertas/Mensaje';
-import { useWindowWidth } from '../hooks/useWindowWidth'
+import { useWindowWidth } from '../hooks/useWindowWidth';
 
-Modal.setAppElement('#root'); 
+Modal.setAppElement('#root');
 
 export const LandinPage = () => {
     const [productos, setProductos] = useState([]);
@@ -22,7 +22,7 @@ export const LandinPage = () => {
     const [cantidad, setCantidad] = useState(1);
     const [producto, setProducto] = useState(null);
     const [mensajeConfirmacion, setMensajeConfirmacion] = useState('');
-    const [tipoMensaje, setTipoMensaje] = useState(null); 
+    const [tipoMensaje, setTipoMensaje] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [productModalIsOpen, setProductModalIsOpen] = useState(false);
@@ -32,17 +32,21 @@ export const LandinPage = () => {
     const [loading, setLoading] = useState(true); // Estado para controlar la carga
 
     useEffect(() => {
-        getProductosListar()
-            .then(response => {
+        const fetchProductos = async () => {
+            try {
+                const response = await getProductosListar();
                 setProductos(response.data);
                 setFilteredProductos(response.data);
                 setLoading(false); // Una vez que se obtiene respuesta, se desactiva la carga
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error al obtener productos:', error);
-            });
+                // En caso de error, mantenemos el estado de carga
+            }
+        };
+
+        fetchProductos();
     }, []);
-    
+
     useEffect(() => {
         const storedCartItems = localStorage.getItem('cartItems');
         if (storedCartItems) {
@@ -53,7 +57,7 @@ export const LandinPage = () => {
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
-    
+
     const handleCategorySelect = async (categoryId) => {
         setIsMenuOpen(false);
         try {
@@ -77,7 +81,7 @@ export const LandinPage = () => {
     const closeProductModal = () => {
         setProductModalIsOpen(false);
         setProducts([]);
-        setProductError(null); 
+        setProductError(null);
     };
 
     const isInCart = (productoId) => {
@@ -102,37 +106,38 @@ export const LandinPage = () => {
 
     return windowWidth > 768 ? (
         <main className='bg-white px-10 md:px-20 lg:px-0'>
-            <div className="sticky top-0 z-50" style={{ backgroundColor: 'white', paddingBottom : '25px'}}>
+            <div className="sticky top-0 z-50" style={{ backgroundColor: 'white', paddingBottom: '25px' }}>
                 <div className="bg-teal-600 text-white p-4 text-center text-2xl font-bold">
                     Minimarket "Mika y Vale"
                 </div>
-            <section>
-                <div className='flex justify-between items-center px-20'>
-                    <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>
-                        Productos Disponibles
-                    </h2>
-                    <div className='flex space-x-4 items-center'>
-                        <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
-                        <button onClick={toggleMenu} className="text-teal-600">
-                            {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
-                        </button>
-                        <Link to="/login" className="text-teal-600">
-                            <FaShoppingCart size={30} />
-                        </Link>
-                        <Link to="/login" className="text-teal-600">
-                            <FaHeart size={30} />
-                        </Link>
-                        <Link to="/login" className="text-teal-600">
-                            <FaStore size={30} />
-                        </Link>
+                <section>
+                    <div className='flex justify-between items-center px-20'>
+                        <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>
+                            Productos Disponibles
+                        </h2>
+                        <div className='flex space-x-4 items-center'>
+                            <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
+                            <button onClick={toggleMenu} className="text-teal-600">
+                                {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
+                            </button>
+                            <Link to="/login" className="text-teal-600">
+                                <FaShoppingCart size={30} />
+                            </Link>
+                            <Link to="/login" className="text-teal-600">
+                                <FaHeart size={30} />
+                            </Link>
+                            <Link to="/login" className="text-teal-600">
+                                <FaStore size={30} />
+                            </Link>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
             </div>
 
             {/* Animación de carga */}
             {loading && (
-                <div className="flex justify-center items-center h-screen">
+                <div className="flex justify-center items-center h-screen flex-col">
+                    <FaSpinner className="animate-spin text-teal-600 text-9xl mb-4" />
                     <p className="text-4xl font-semibold text-teal-600">Cargando productos...</p>
                 </div>
             )}
@@ -149,11 +154,11 @@ export const LandinPage = () => {
                         {filteredProductos.map((producto) => (
                             <div key={producto._id} className='thumb-block'>
                                 <div className='text-center shadow-2xl p-10 rounded-xl my-10'>
-                                    <img 
+                                    <img
                                         className='mx-auto h-40 w-40 object-cover'
                                         src={producto.imagen?.secure_url ? producto.imagen.secure_url : ''}
                                         alt={producto.nombre}
-                                        onError={(e) => {e.target.onerror = null; e.target.src=""}}
+                                        onError={(e) => { e.target.onerror = null; e.target.src = "" }}
                                     />
                                     <h3 className='text-lg font-medium pt-8 pb-2'>{producto.nombre}</h3>
                                     <p className='text-gray-800 py-1'>{producto.descripcion}</p>
@@ -169,7 +174,7 @@ export const LandinPage = () => {
                                         </>
                                     )}
                                     <button onClick={() => navigate("/login")} className="bg-red-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-red-800">
-                                        <FaHeart size={20} /> 
+                                        <FaHeart size={20} />
                                     </button>
                                 </div>
                             </div>
@@ -182,13 +187,13 @@ export const LandinPage = () => {
                 <ModalCarrito onClose={() => setModalIsOpen(false)}>
                     <h2>{isInCart(producto?._id) ? 'Actualizar Producto del Carrito' : 'Agregar Producto al Carrito'}</h2>
                     <p>{producto && producto.nombre}</p>
-                    <input 
-                        type="number" 
-                        placeholder="Cantidad" 
-                        value={cantidad} 
-                        onChange={(e) => setCantidad(Math.min(20, Math.max(1, Number(e.target.value))))} 
-                        min="1" 
-                        max="20" 
+                    <input
+                        type="number"
+                        placeholder="Cantidad"
+                        value={cantidad}
+                        onChange={(e) => setCantidad(Math.min(20, Math.max(1, Number(e.target.value))))}
+                        min="1"
+                        max="20"
                         className="border p-2 rounded"
                     />
                     {isInCart(producto?._id) ? (
@@ -250,7 +255,7 @@ export const LandinPage = () => {
                 <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg " alt="movil" className="center" />
             </div>
         </>
-    )
+    );
 };
 
 export default LandinPage;
