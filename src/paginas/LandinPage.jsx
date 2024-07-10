@@ -29,12 +29,14 @@ export const LandinPage = () => {
     const [productError, setProductError] = useState(null);
     const { auth } = useContext(AuthContext);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true); // Estado para controlar la carga
 
     useEffect(() => {
         getProductosListar()
             .then(response => {
                 setProductos(response.data);
                 setFilteredProductos(response.data);
+                setLoading(false); // Una vez que se obtiene respuesta, se desactiva la carga
             })
             .catch(error => {
                 console.error('Error al obtener productos:', error);
@@ -128,7 +130,12 @@ export const LandinPage = () => {
             </section>
             </div>
 
-
+            {/* Animación de carga */}
+            {loading && (
+                <div className="flex justify-center items-center h-screen">
+                    <p className="text-4xl font-semibold text-teal-600">Cargando productos...</p>
+                </div>
+            )}
 
             {isMenuOpen && (
                 <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
@@ -136,38 +143,40 @@ export const LandinPage = () => {
                 </section>
             )}
 
-            <section>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center lg:px-20'>
-                    {filteredProductos.map((producto) => (
-                        <div key={producto._id} className='thumb-block'>
-                            <div className='text-center shadow-2xl p-10 rounded-xl my-10'>
-                                <img 
-                                    className='mx-auto h-40 w-40 object-cover'
-                                    src={producto.imagen?.secure_url ? producto.imagen.secure_url : ''}
-                                    alt={producto.nombre}
-                                    onError={(e) => {e.target.onerror = null; e.target.src=""}}
-                                />
-                                <h3 className='text-lg font-medium pt-8 pb-2'>{producto.nombre}</h3>
-                                <p className='text-gray-800 py-1'>{producto.descripcion}</p>
-                                <p className='text-gray-800 py-1'>{producto.categoria}</p>
-                                <p className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</p>
-                                {isInCart(producto._id) ? (
-                                    <>
-                                        <button onClick={() => navigate("/login")} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button onClick={() => navigate("/login")} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
-                                    </>
-                                )}
-                                <button onClick={() => navigate("/login")} className="bg-red-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-red-800">
-                                    <FaHeart size={20} /> 
-                                </button>
+            {!loading && (
+                <section>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center lg:px-20'>
+                        {filteredProductos.map((producto) => (
+                            <div key={producto._id} className='thumb-block'>
+                                <div className='text-center shadow-2xl p-10 rounded-xl my-10'>
+                                    <img 
+                                        className='mx-auto h-40 w-40 object-cover'
+                                        src={producto.imagen?.secure_url ? producto.imagen.secure_url : ''}
+                                        alt={producto.nombre}
+                                        onError={(e) => {e.target.onerror = null; e.target.src=""}}
+                                    />
+                                    <h3 className='text-lg font-medium pt-8 pb-2'>{producto.nombre}</h3>
+                                    <p className='text-gray-800 py-1'>{producto.descripcion}</p>
+                                    <p className='text-gray-800 py-1'>{producto.categoria}</p>
+                                    <p className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</p>
+                                    {isInCart(producto._id) ? (
+                                        <>
+                                            <button onClick={() => navigate("/login")} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Actualizar carrito</button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button onClick={() => navigate("/login")} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
+                                        </>
+                                    )}
+                                    <button onClick={() => navigate("/login")} className="bg-red-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-red-800">
+                                        <FaHeart size={20} /> 
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             {modalIsOpen && (
                 <ModalCarrito onClose={() => setModalIsOpen(false)}>
@@ -202,36 +211,28 @@ export const LandinPage = () => {
 
             {productModalIsOpen && (
                 <Modal isOpen={productModalIsOpen} onRequestClose={closeProductModal} contentLabel="Productos de la Categoría">
-                    <h2 className="text-xl font-bold mb-4">Productos de la Categoría</h2>
-                    <button onClick={closeProductModal} className="absolute top-2 right-2 text-gray-600">X</button>
                     {productError ? (
-                        <Mensaje tipo="informacion">{productError}</Mensaje>
+                        <p className="text-red-600">{productError}</p>
                     ) : (
-                        products.length === 0 ? (
-                            <Mensaje tipo="informacion">No hay productos para esta categoría</Mensaje>
-                        ) : (
-                            <ul>
-                                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center'>
-                                    {products.map(producto => (
-                                        <div key={producto._id} className='thumb-block'>
-                                            <div className='text-center shadow-2xl p-10 rounded-xl my-10'>
-                                                <img
-                                                    className='mx-auto h-40 w-40 object-cover'
-                                                    src={producto.imagen?.secure_url ? producto.imagen.secure_url : ''}
-                                                    alt={producto.nombre}
-                                                    onError={(e) => { e.target.onerror = null; e.target.src = "" }}
-                                                />
-                                                <h3 className='text-lg font-medium pt-8 pb-2'>{producto.nombre}</h3>
-                                                <p className='text-gray-800 py-1'>{producto.descripcion}</p>
-                                                <p className='text-gray-800 py-1'>{producto.categoria}</p>
-                                                <p className='text-gray-800 py-1'>$ {producto.precio.toFixed(2)}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </ul>
-                        )
+                        <>
+                            <h2 className="text-2xl font-semibold mb-4">Productos de la Categoría</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {products.map(producto => (
+                                    <div key={producto._id} className="bg-white rounded-lg shadow p-4">
+                                        <h3 className="text-lg font-semibold">{producto.nombre}</h3>
+                                        <p className="text-gray-600">{producto.descripcion}</p>
+                                        <p className="text-gray-800 mt-2">${producto.precio.toFixed(2)}</p>
+                                        <button onClick={() => navigate("/login")} className="bg-teal-600 text-white px-4 py-2 rounded mt-4 hover:bg-teal-800">
+                                            {isInCart(producto._id) ? 'Actualizar Carrito' : 'Agregar al Carrito'}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
                     )}
+                    <button onClick={closeProductModal} className="absolute top-2 right-2 bg-gray-200 text-gray-600 hover:bg-gray-300 px-3 py-1 rounded">
+                        Cerrar
+                    </button>
                 </Modal>
             )}
             <footer className="bg-teal-600 text-white p-4 mt-4 sticky bottom-0">
@@ -241,9 +242,8 @@ export const LandinPage = () => {
                     <p>Horario: Lunes a Viernes de 6 AM - 10 PM</p>
                 </div>
             </footer>
-
         </main>
-    ): (
+    ) : (
         <>
             <div style={{ alignContent: 'center', margin: '0 10% 5% 10%', background: 'red', border: '40px solid red' }}>
                 <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
