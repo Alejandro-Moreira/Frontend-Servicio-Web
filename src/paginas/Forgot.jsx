@@ -2,11 +2,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import axios from 'axios';
 import Mensaje from '../componets/Alertas/Mensaje';
+import { useWindowWidth } from '../hooks/useWindowWidth'
 
 export const Forgot = () => {
 
     const [mensaje, setMensaje] = useState({})
     const [mail, setMail] = useState({})
+    const windowWidth = useWindowWidth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -31,7 +33,7 @@ export const Forgot = () => {
             setMensaje({ respuesta: error.response.data.msg, tipo: false })
         }
     }
-    return (
+    return windowWidth > 768 ?(
         <>
             <div className="bg-white flex justify-center items-center w-1/2">
                 <div className="md:w-4/5 sm:w-full">
@@ -71,6 +73,13 @@ export const Forgot = () => {
             </div>
 
             <div className="w-1/2 h-screen bg-[url('/images/r.contraseña.webp')] bg-no-repeat bg-cover bg-center sm:block hidden"></div>
+        </>
+    ): (
+        <>
+            <div style={{ alignContent: 'center', margin: '0 10% 5% 10%', background: 'red', border: '40px solid red' }}>
+                <h1 className='text-5xl py-2 text-white font-medium md:text-6xl text-center'>Lo sentimos, la página no esta disponible para móviles</h1>
+                <img src="https://thumbs.dreamstime.com/b/no-utilizar-el-tel%C3%A9fono-m%C3%B3vil-muestra-s%C3%ADmbolo-ejemplo-113030705.jpg " alt="movil" className="center" />
+            </div>
         </>
     )
 }

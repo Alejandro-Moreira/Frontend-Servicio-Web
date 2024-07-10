@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
-import { FaTrashAlt, FaArrowLeft, FaShoppingCart, FaHistory, FaBars, FaTimes, FaHeart } from 'react-icons/fa';
+import { FaTrashAlt, FaArrowLeft, FaShoppingCart, FaHistory, FaBars, FaTimes } from 'react-icons/fa';
 import Modal from 'react-modal';
 import ModalCarrito from '../componets/Modals/ModalCarrito';
-import FavoriteCategoryList from './CategoryListFav'; // Importa el nuevo componente
+import FavoriteCategoryList from './CategoryListFav'; 
 import { SearchInput } from './Barrabusqueda';
 
 Modal.setAppElement('#root');
@@ -55,6 +55,13 @@ export const Favoritos = () => {
         }
     }, [auth?.userId]);
 
+    useEffect(() => {
+        const storedCartItems = localStorage.getItem('cartItems');
+        if (storedCartItems) {
+            setCartItems(JSON.parse(storedCartItems));
+        }
+    }, []);
+
     const BorrarFavoritos = async (productoId) => {
         try {
             await axios({
@@ -81,13 +88,32 @@ export const Favoritos = () => {
     };
 
     const addToCart = async () => {
+        if (!auth?.userId) {
+            showMessage('Usuario no autenticado', false);
+            return;
+        }
+
+        if (!producto) {
+            showMessage('Producto no encontrado', false);
+            return;
+        }
+
         try {
-            await axios.post(`${baseUrl}/pedidos/agregar`, {
+            const response = await axios.post(`${baseUrl}/pedidos/agregar`, {
                 cliente: auth.userId,
-                producto: producto._id,
+                producto: producto.producto,
                 cantidad: cantidad
             });
-            const updatedCartItems = [...cartItems, { ...producto, cantidad }];
+
+            if (response.data.message === 'No existe ese producto') {
+                showMessage('No existe ese producto', false);
+                return;
+            }
+
+            const updatedCartItems = cartItems.some(item => item._id === producto._id)
+                ? cartItems.map(item => item._id === producto._id ? { ...item, cantidad: item.cantidad + cantidad } : item)
+                : [...cartItems, { ...producto, cantidad }];
+            
             setCartItems(updatedCartItems);
             localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
             showMessage('Producto añadido al carrito con éxito', true);
@@ -184,7 +210,9 @@ export const Favoritos = () => {
                                 <p className='text-gray-800 py-1'>{favorito.descripcion}</p>
                                 <p className='text-gray-800 py-1'>{favorito.categoria}</p>
                                 <p className='text-gray-800 py-1'>$ {favorito.precio.toFixed(2)}</p>
-                                {!isInCart(favorito._id) && (
+                                {isInCart(favorito._id) ? (
+                                    <button className="bg-gray-400 text-white px-6 py-2 rounded-full mt-4" disabled>En el carrito</button>
+                                ) : (
                                     <button onClick={() => handleAddToCartClick(favorito)} className="bg-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:bg-teal-800">Añadir al carrito</button>
                                 )}
                                 <button onClick={() => BorrarFavoritos(favorito._id)} className="text-teal-600 ml-4">

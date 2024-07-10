@@ -1,17 +1,14 @@
 import { useContext, useEffect, useState } from "react";
-import { MdDeleteForever, MdNoteAdd, MdInfo } from "react-icons/md";
+import { MdDeleteForever, MdInfo } from "react-icons/md";
 import { FaSearch } from "react-icons/fa";
 import axios from 'axios';
 import Mensaje from "./Alertas/Mensaje";
-import JSConfetti from 'js-confetti';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from "../context/AuthProvider";
 
 const Tabla = () => {
     const { auth } = useContext(AuthContext);
     const navigate = useNavigate();
-    const jsConfetti = new JSConfetti();
-    jsConfetti.addConfetti();
     const [productos, setProductos] = useState([]);
     const [filteredProductos, setFilteredProductos] = useState([]);
     const [searchValue, setSearchValue] = useState('');
@@ -81,7 +78,7 @@ const Tabla = () => {
                     onChange={onSearchValue}
                     maxLength="30"
                     className="border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    style={{ width : '400px'}}
+                    style={{ width: '400px' }}
                 />
                 <FaSearch className="ml-3 text-gray-500" />
             </div>
@@ -122,9 +119,9 @@ const Tabla = () => {
                                                             className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2"
                                                             onClick={() => navigate(`/dashboard/actualizar-producto/${producto._id}`)}
                                                         />
-
-                                                        <MdDeleteForever className="h-7 w-7 text-red-900 cursor-pointer inline-block"
-                                                            onClick={() => navigate(`/dashboard/eliminar-producto/${producto._id}`)}
+                                                        <MdDeleteForever
+                                                            className="h-7 w-7 text-red-900 cursor-pointer inline-block"
+                                                            onClick={() => handleDelete(producto._id)}
                                                         />
                                                     </>
                                                 )

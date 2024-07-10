@@ -247,7 +247,7 @@ const CarritoDeVentas = () => {
                     contentLabel="Finalizar Pedido"
                     style={modalStyles}
                 >
-                    <div className="modal-header" style={styles.modalHeader}><strong>Finalizar Pedido</strong></div>
+                    <div className="modal-header" style={styles.modalHeader}><strong>Finalizar Venta</strong></div>
                     <div className="modal-footer" style={styles.modalFooter}>
                         <button onClick={procesarVenta} style={styles.confirmButton}>Confirmar</button>
                         <button onClick={cerrarModal} style={styles.cancelButton}>Cancelar</button>

@@ -40,6 +40,8 @@ import CarritoDeVentas from './paginas/CarritoVentas'
 import ListProducts from './paginas/ListProducts';
 import FavoriteCategoryList from './paginas/CategoryListFav';
 import CategoriasFav from './paginas/CategoriasFav';
+import ListProducts2 from './paginas/ListProducts2';
+import CategoryListCajero from './paginas/CategoriaCajero';
 
 function App() {
   return (
@@ -70,7 +72,7 @@ function App() {
               <Route path='cajero-listar' element={<MostrarCajeros />} />
               <Route path='cajero-actualizar/:id' element={<ActualizarCajero />} />
               <Route path='cajero-registro' element={<CrearCajero />} />
-              <Route path='cajero-borrar' element={<BorrarCajero />} />
+              <Route path='cajero-borrar/:id' element={<BorrarCajero />} />
               <Route path='historial-pedidos' element={<HistorialPedidosAdmin />} />
               <Route path='historial-ventas' element={<HistorialVentasAdmin />} />
               <Route path="cerrar-sesion" element={<CierreSesion />} />
@@ -90,8 +92,8 @@ function App() {
           {/*Cajero*/}
               <Route path='catalogo-cajero' element={<CatalogoCajero/>}/>
               <Route path='carrito-ventas' element={<CarritoDeVentas/>}/>
-              <Route path='categorias' element={<CategoryList />} />   
-              <Route path='productos/categoria/:categoryId' element={<ListProducts />} /> 
+              <Route path='categorias' element={<CategoryListCajero />} />   
+              <Route path='productos/categorias/:categoryId' element={<ListProducts2 />} /> 
               <Route path='historial-ventas' element={<HistorialVentasCajero/>}/>
               <Route path='historial-ventas-cajeros' element={<HistorialVentasAdmin/>}/>
               <Route path='historial-pedidos-cajeros' element={<HistorialPedidosAdmin/>}/>

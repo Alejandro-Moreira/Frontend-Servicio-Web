@@ -1,15 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import AuthContext from '../context/AuthProvider';
-import { FaArrowLeft, FaShoppingCart} from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft} from 'react-icons/fa';
 import Mensaje from '../componets/Alertas/Mensaje';
 import ModalCarrito from '../componets/Modals/ModalCarrito';
+import AuthContext from '../context/AuthProvider';
 import { SearchInput } from './Barrabusqueda';
 
-const CategoriasFav = () => {
-  const { categoryName } = useParams();
+const ListProducts2 = () => {
+  const { categoryId } = useParams();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
@@ -25,10 +24,9 @@ const CategoriasFav = () => {
   const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
-    const fetchFavoriteProducts = async () => {
-      const userId = localStorage.getItem('userId');
+    const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/favoritos/categoria/${categoryName}?cliente=${userId}`);
+        const response = await axios.get(`${backendUrl}/productos/categoria/${categoryId}`);
         if (response.data && Array.isArray(response.data)) {
           setProducts(response.data);
           setFilteredProducts(response.data);
@@ -40,13 +38,13 @@ const CategoriasFav = () => {
           setError('Error: La respuesta de la API no es un array');
         }
       } catch (error) {
-        setError('Error al mostrar productos favoritos');
-        console.error('Error al mostrar productos favoritos:', error);
+        setError('Error al mostrar productos');
+        console.error('Error al mostrar productos:', error);
       }
     };
 
-    fetchFavoriteProducts();
-  }, [backendUrl, categoryName]);
+    fetchProducts();
+  }, [backendUrl, categoryId]);
 
   useEffect(() => {
     const storedCartItems = localStorage.getItem('cartItems');
@@ -63,9 +61,9 @@ const CategoriasFav = () => {
 
   const addToCart = async () => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/pedidos/agregar`, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ventas/agregar`, {
         cliente: auth.userId,
-        producto: producto.producto,
+        producto: producto._id,
         cantidad: cantidad,
       });
 
@@ -116,7 +114,7 @@ const CategoriasFav = () => {
   return (
     <main className='bg-white px-10 md:px-20 lg:px-40'>
       <section className='flex items-center justify-between'>
-        <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos Favoritos - {categoryName}</h2>
+        <h2 className='text-5xl py-2 text-teal-600 font-medium md:text-6xl'>Productos</h2>
         <div className='flex space-x-4 items-center'>
           <SearchInput searchValue={searchValue} onSearch={onSearchValue} />
           <button onClick={() => navigate(-1)} className="text-teal-600">
@@ -129,7 +127,7 @@ const CategoriasFav = () => {
       <section>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center'>
           {filteredProducts.length === 0 ? (
-            <Mensaje tipo="informacion">No hay productos favoritos para esta categoría</Mensaje>
+            <Mensaje tipo="informacion">No hay productos para esta categoría</Mensaje>
           ) : (
             filteredProducts.map((producto) => (
               <div key={producto._id} className='thumb-block'>
@@ -185,4 +183,4 @@ const CategoriasFav = () => {
   );
 };
 
-export default CategoriasFav;
+export default ListProducts2;

@@ -46,23 +46,11 @@ const MostrarCajeros = () => {
     fetchCajeros();
   }, [backendUrl]);
 
-  const handleDelete = async (id) => {
-    try {
-      const confirmar = confirm("¿Estás seguro de que deseas eliminar este cajero?");
-      if (confirmar) {
-        const userId = localStorage.getItem('userId');
-        const url = `${backendUrl}/cajeros/eliminar/${id}`;
-        await axios.delete(url, {
-          data: { cliente: userId }
-        });
-        setCajeros(cajeros.filter(cajero => cajero._id !== id));
-        setFilteredCajeros(filteredCajeros.filter(cajero => cajero._id !== id));
-      }
-    } catch (error) {
-      console.log(error);
-      setError('Error al eliminar el cajero');
-    }
+  const handleDelete = (id) => {
+    console.log(id)
+    navigate(`/dashboard/cajero-borrar/${id}`);
   };
+
 
   const handleCreate = () => {
     navigate('/dashboard/cajero-registro');

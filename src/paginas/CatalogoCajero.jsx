@@ -7,7 +7,7 @@ import Modal from 'react-modal';
 import ModalCarrito from '../componets/Modals/ModalCarrito';
 import { SearchInput } from './Barrabusqueda';
 import { getProductosListar } from "./../services/getProductosListar";
-import CategoryList from './CategoriaCliente';
+import CategoryListCajero from './CategoriaCajero';
 import Mensaje from '../componets/Alertas/Mensaje';
 import { useWindowWidth } from '../hooks/useWindowWidth'
 
@@ -218,7 +218,7 @@ export const CatalogoCajero = () => {
             <p className='text-slate-900 my-4 text-2xl text-right'>Bienvenido - {auth?.nombre}</p>
             {isMenuOpen && (
                 <section className="bg-gray-100 p-4 rounded-lg shadow-lg absolute top-16 left-0 w-full md:w-1/3 z-10">
-                    <CategoryList onCategorySelect={handleCategorySelect} />
+                    <CategoryListCajero onCategorySelect={handleCategorySelect} />
                 </section>
             )}
 
