@@ -23,15 +23,25 @@ Para poder clonar y utilizar este repositorio para ver su funcionamiento o para 
 
 ## Instalación
 Paso 1: Clonar el repositorio
+
 ```git clone https://github.com/Alejandro-Moreira/Frontend-Servicio-Web.git```
+
 Paso 2: Instalar dependencias
+
 ```npm install```
+
 Paso 3: Configurar las variables de entorno
+
 Crear un archivo .env en la raíz del proyecto y añadir la variable:
+
 ```VITE_BACKEND_URL=http://localhost:3000/api```
+
 Paso 4: Iniciar el servidor de desarrollo
 npm run dev
-Paso 5: Ingre
+
+Paso 5: Ingresar al navegador a la siguiente url:
+
+```localhost:5173/```
 
 ## Lenguajes y Herramientas Utilizados
 * Javascript
