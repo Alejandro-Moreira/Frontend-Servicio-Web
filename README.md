@@ -29,7 +29,6 @@ git clone https://github.com/Alejandro-Moreira/Frontend-Servicio-Web.git
 ```
 
 Paso 2: Instalar dependencias
-
 <br>
 
 ```npm install```
@@ -56,5 +55,5 @@ localhost:5173/
 * 
 
 ## Autores
-Frontend: Alejandro Moreira
-Backend: Miguel Paredes
+* Frontend: Alejandro Moreira
+* Backend: Miguel Paredes
