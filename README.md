@@ -29,10 +29,8 @@ git clone https://github.com/Alejandro-Moreira/Frontend-Servicio-Web.git
 ```
 
 Paso 2: Instalar dependencias
-
-```
-npm install
-```
+<br>
+```npm install```
 
 Paso 3: Configurar las variables de entorno
 
