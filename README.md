@@ -42,7 +42,7 @@ VITE_BACKEND_URL=http://localhost:3000/api
 ```
 
 Paso 4: Iniciar el servidor de desarrollo
-npm run dev
+```npm run dev```
 
 Paso 5: Ingresar al navegador a la siguiente url:
 
@@ -52,7 +52,9 @@ localhost:5173/
 
 ## Lenguajes y Herramientas Utilizados
 * Javascript
-* 
+* ReactJS
+* Vite
+* Vercel
 
 ## Autores
 * Frontend: Alejandro Moreira
