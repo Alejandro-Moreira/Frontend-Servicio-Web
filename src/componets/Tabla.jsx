@@ -121,7 +121,7 @@ const Tabla = () => {
                                                         />
                                                         <MdDeleteForever
                                                             className="h-7 w-7 text-red-900 cursor-pointer inline-block"
-                                                            onClick={() => handleDelete(producto._id)}
+                                                            onClick={() => navigate(`/dashboard/eliminar-producto/${producto._id}`)}
                                                         />
                                                     </>
                                                 )
